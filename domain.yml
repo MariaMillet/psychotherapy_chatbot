@@ -1,0 +1,110 @@
+version: "3.1.0"
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
+intents:
+  - greet
+  - goodbye
+  - correct_prediction
+  - not_correct_prediction
+  - is_recent
+  - is_protocol_11_distressing
+  - is_protocol_6_distressing
+  - ok_to_ask_more
+  - strong_emotions
+  - recommend_protocols
+entities:
+  - emotion
+  - protocols_1
+  - protocols_2
+slots:
+  pastResponses:
+    type: any
+    mappings:
+      - type: custom
+  responseDataset:
+    type: any
+    mappings:
+      - type: custom
+  emotion:
+    type: text
+    influence_conversation: false
+    mappings:
+    - type: from_entity
+      entity: emotion
+  
+  protocols_1:
+    type: list
+    mappings:
+    - type: from_entity
+      entity: protocols_1
+  protocols_2:
+    type: list
+    mappings:
+    - type: from_entity
+      entity: protocols_2
+  emotion_prediction:
+    type: text
+    mappings:
+    - type: custom
+      conditions:
+      - active_loop: emotion_form
+        requested_slot: emotion_prediction
+  current_feeling:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_text
+        conditions:
+         - active_loop: emotion_form
+           requested_slot: current_feeling
+  # emotion_confirmation:
+  #   type: text
+  #   influence_conversation: true
+  #   mappings:
+  #     - type: from_text
+  #       conditions:
+  #        - active_loop: emotion_form
+  #          requested_slot: emotion_confirmation
+  emotion_confirmation:
+    type: text #rasa.shared.core.slots.BooleanSlot
+    influence_conversation: true
+    # initial_value: null
+    # auto_fill: true
+    # influence_conversation: true
+    mappings:
+    - type: from_text
+      conditions:
+      - active_loop: emotion_form
+        requested_slot: emotion_confirmation
+  # emotion:
+  #   type: text
+  #   mappings:
+  #   - type: custom
+  #     conditions:
+  #     - active_loop: emotion_form
+  #       requested_slot: emotion
+responses:
+  # utter_greet:
+  #   - text: Hello, I’m Silly, I can check the time, date and day of the week for you. You can ask me "what time is it now?", "what day is today?" or "what day is tomorrow?"
+  utter_goodbye:
+    - text: Goodbye!
+actions:
+  - utter_goodbye
+  - action_ask_current_feeling
+  - action_ask_emotion_prediction
+  - action_emotion_confirmation
+  - action_manual_emotion_selection
+  - action_is_recent
+  - action_is_protocol_6_distressing
+  - action_is_protocol_11_distressing
+  - action_ok_to_ask_more
+  - action_strong_emotions
+  - action_recommend_protocols
+forms:
+  emotion_form:
+    required_slots:
+        - current_feeling
+        - emotion_prediction
+
+  
