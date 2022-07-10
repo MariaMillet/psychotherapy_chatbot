@@ -256,9 +256,10 @@ class Action6distressing(Action):
         past_responses = tracker.get_slot('pastResponses')
         test = generate_next_response(prompt="how_recent_is_the_event?", past_sentences=past_responses)
         print(test)
+        past_responses[len(past_responses)+1] = test
         buttons = [{"title": "yes", "payload": '/ok_to_ask_more{"protocols_1":["13","25"]}'}, {"title": "no", "payload":'/ok_to_ask_more{"protocols_1":[6]}'}]
         dispatcher.utter_button_message(f"Did you find protocol 6 distressing?", buttons)
-        return []
+        return [SlotSet('pastResponses',past_responses)]
 
 class AskMoreQuestions(Action):
     def name(self) -> Text:
@@ -274,6 +275,8 @@ class AskMoreQuestions(Action):
         dispatcher.utter_message(f"enough for today{protocols_so_far} and {type(protocols_so_far)} so far and {em}")
         buttons = [{"title": "yes", "payload": '/strong_emotions'}, {"title": "no", "payload":'/strong_emiotions'}]
         dispatcher.utter_button_message(f"is it ok to ask more questions", buttons)
+        past_responses = tracker.get_slot('pastResponses')
+        print(past_responses)
         # buttons = [{"title": "yes", "payload": '/ok_to_ask_more'}, {"title": "no", "payload":'/ok_to_ask_more'}]
         # dispatcher.utter_button_message(f"Was this a recent event", buttons)
         # print(tracker.get_slot('emotion_confirmation'))
