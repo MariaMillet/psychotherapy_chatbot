@@ -1,0 +1,70 @@
+version: "3.1.0"
+stories:
+  # - story: happy path
+  #   steps:
+  #     - intent: greet
+  #     - action: action_greet_ask_feeling
+  #     #utter_greet
+
+  - story: say goodbye
+    steps:
+      - intent: goodbye
+      - action: utter_goodbye
+
+rules:
+- rule: Activate form
+  steps:
+  - intent: greet
+  - action: emotion_form
+  - active_loop: emotion_form
+
+- rule: mapping from incorrect emotion to manual selection
+  steps:
+  - intent: not_correct_prediction
+  - action: action_manual_emotion_selection
+
+- rule: is the event recent
+  steps:
+  - intent: is_recent
+  - action: action_is_recent
+
+- rule: is protocol 11 distressing
+  steps:
+  - intent: is_protocol_11_distressing
+  - action: action_is_protocol_11_distressing
+
+- rule: is protocol 6 distressing
+  steps:
+  - intent: is_protocol_6_distressing
+    # entities:
+    #   - content_type: "protocols"
+  - action: action_is_protocol_6_distressing
+  # - slot_was_set: 
+  #     - content_type: "protocols"
+
+- rule: permission to ask more questions
+  steps:
+  - intent: ok_to_ask_more
+    # entities:
+    #   - content_type: "protocols"
+  - action: action_ok_to_ask_more
+  # - slot_was_set: 
+  #   - content_type: "protocols"
+
+- rule: permission to ask more questions
+  steps:
+  - intent: recommend_protocols
+    # entities:
+    #   - content_type: "protocols"
+  - action: action_recommend_protocols
+  # - slot_was_set: 
+  #   - content_type: "protocols"
+
+- rule: asking if strong emotions are experiences
+  steps:
+  - intent: strong_emotions
+    # entities:
+    #   - content_type: "protocols"
+  - action: action_strong_emotions
+  # - slot_was_set: 
+  #   - content_type: "protocols"

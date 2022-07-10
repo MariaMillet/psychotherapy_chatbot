@@ -1,0 +1,143 @@
+{
+  "builder_name": "json",
+  "citation": "",
+  "config_name": "default",
+  "dataset_size": 97850,
+  "description": "",
+  "download_checksums": {
+    "/content/emp_chatbot/data/sadness_questions_follow_up.json": {
+      "num_bytes": 282950,
+      "checksum": "bafc8be5b2c5e588f027acb365e5b1a0d37217ffe4d3eb2b3e2a9b0e212edc2e"
+    }
+  },
+  "download_size": 282950,
+  "features": {
+    "age": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "sad_utterance": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "how_recent_is_the_event?": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "specific_event_trigger": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "additional_questions_permission": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "feeling_envy_mistrust_trigger": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "method_6": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "self_blame_trigger": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "gender": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "ppl_how_recent_is_the_event?": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "ppl_specific_event_trigger": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "ppl_additional_questions_permission": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "ppl_feeling_envy_mistrust_trigger": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "ppl_method_6": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "embeddings": {
+      "feature": {
+        "feature": {
+          "feature": {
+            "dtype": "float64",
+            "id": null,
+            "_type": "Value"
+          },
+          "length": -1,
+          "id": null,
+          "_type": "Sequence"
+        },
+        "length": -1,
+        "id": null,
+        "_type": "Sequence"
+      },
+      "length": -1,
+      "id": null,
+      "_type": "Sequence"
+    },
+    "similarity": {
+      "feature": {
+        "feature": {
+          "dtype": "float32",
+          "id": null,
+          "_type": "Value"
+        },
+        "length": -1,
+        "id": null,
+        "_type": "Sequence"
+      },
+      "length": -1,
+      "id": null,
+      "_type": "Sequence"
+    }
+  },
+  "homepage": "",
+  "license": "",
+  "post_processed": null,
+  "post_processing_size": null,
+  "size_in_bytes": 380800,
+  "splits": {
+    "train": {
+      "name": "train",
+      "num_bytes": 97850,
+      "num_examples": 92,
+      "dataset_name": "json"
+    }
+  },
+  "supervised_keys": null,
+  "task_templates": null,
+  "version": {
+    "version_str": "0.0.0",
+    "description": null,
+    "major": 0,
+    "minor": 0,
+    "patch": 0
+  }
+}
