@@ -20,6 +20,7 @@ entities:
 slots:
   pastResponses:
     type: any
+    # initial_value: None
     mappings:
       - type: custom
   responseDataset:
