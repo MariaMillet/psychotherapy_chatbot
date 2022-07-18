@@ -22,7 +22,7 @@ def novelty_score(sent_1_n_grams, sent_2_n_grams):
 
 def calculate_novelty(sentence,past_sentences):
   new_sentence_n_grams = generate_n_gram(sentence, max_n_gram=3)
-  print(len(past_sentences))
+#   print(len(past_sentences))
   novelty = sum([novelty_score(new_sentence_n_grams, past_sentences[str(i)]) for i in range(len(past_sentences))])/len(past_sentences)
   return novelty
 

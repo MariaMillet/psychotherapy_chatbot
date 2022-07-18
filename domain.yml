@@ -13,11 +13,39 @@ intents:
   - ok_to_ask_more
   - strong_emotions
   - recommend_protocols
+  - additional_questions
+  - invite_to_protocol
+  - ask_for_feedback
+  - respond_to_feedback
+  - follow_up_protocol
+  - protocol_recommendation_follow_up
 entities:
   - emotion
   - protocols_1
-  - protocols_2
+  - positive_to_any_base_questions
+  - number
+  - response_type
 slots:
+
+  relevant_protocols:
+    type: list
+    mappings:
+    - type: custom
+
+  response_type:
+    type: any
+    mappings:
+    - type: from_entity
+      entity: response_type
+
+  lastPrompt:
+    type: text
+    mappings:
+      - type: custom
+  additionalQuestionsPrompts:
+    type: list
+    mappings:
+      - type: custom
   pastResponses:
     type: any
     # initial_value: None
@@ -33,17 +61,22 @@ slots:
     mappings:
     - type: from_entity
       entity: emotion
-  
+  number:
+    type: any
+    mappings:
+    - type: from_entity
+      entity: number
   protocols_1:
     type: list
     mappings:
     - type: from_entity
       entity: protocols_1
-  protocols_2:
-    type: list
+  positive_to_any_base_questions:
+    type: text
+    influence_conversation: false
     mappings:
     - type: from_entity
-      entity: protocols_2
+      entity: positive_to_any_base_questions
   emotion_prediction:
     type: text
     mappings:
@@ -102,6 +135,11 @@ actions:
   - action_ok_to_ask_more
   - action_strong_emotions
   - action_recommend_protocols
+  - action_additional_questions
+  - action_invite_to_protocol
+  - action_ask_for_feedback
+  - action_respond_to_feedback
+  - action_protocol_recommendation_follow_up
 forms:
   emotion_form:
     required_slots:

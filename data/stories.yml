@@ -23,6 +23,22 @@ rules:
   - intent: not_correct_prediction
   - action: action_manual_emotion_selection
 
+
+- rule: subsequent protocols recommendation
+  steps:
+  - intent: protocol_recommendation_follow_up
+  - action: action_protocol_recommendation_follow_up
+
+- rule: asking for feedback after protocol is done
+  steps:
+  - intent: ask_for_feedback
+  - action: action_ask_for_feedback
+
+- rule: responding to feedback after protocol is done
+  steps:
+  - intent: respond_to_feedback
+  - action: action_respond_to_feedback
+
 - rule: is the event recent
   steps:
   - intent: is_recent
@@ -60,6 +76,11 @@ rules:
   # - slot_was_set: 
   #   - content_type: "protocols"
 
+- rule: invite to protocols
+  steps:
+  - intent: invite_to_protocol
+  - action: action_invite_to_protocol
+
 - rule: asking if strong emotions are experiences
   steps:
   - intent: strong_emotions
@@ -68,3 +89,13 @@ rules:
   - action: action_strong_emotions
   # - slot_was_set: 
   #   - content_type: "protocols"
+
+- rule: additional questions loop
+  steps:
+  - intent: additional_questions
+    # entities:
+    #   - content_type: "protocols"
+  - action: action_additional_questions
+  # - slot_was_set: 
+  #   - content_type: "protocols"
+
