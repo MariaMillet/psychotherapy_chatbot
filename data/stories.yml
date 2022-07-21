@@ -18,6 +18,11 @@ rules:
   - action: emotion_form
   - active_loop: emotion_form
 
+- rule: from joyful mood to enquiring protocols
+  steps:
+  - intent: joy_enquire_for_protocol
+  - action: action_joy_enquire_for_protocol 
+
 - rule: mapping from incorrect emotion to manual selection
   steps:
   - intent: not_correct_prediction

@@ -18,14 +18,21 @@ intents:
   - respond_to_feedback
   - follow_up_protocol
   - protocol_recommendation_follow_up
+  - joy_enquire_for_protocol
 entities:
   - emotion
   - protocols_1
   - positive_to_any_base_questions
   - number
   - response_type
+  - positive_protocols
 slots:
-
+  positive_protocols:
+    type: list
+    mappings:
+    - type: from_entity
+      entity: positive_protocols
+  
   relevant_protocols:
     type: list
     mappings:
@@ -138,6 +145,7 @@ actions:
   - action_ask_for_feedback
   - action_respond_to_feedback
   - action_protocol_recommendation_follow_up
+  - action_joy_enquire_for_protocol
 forms:
   emotion_form:
     required_slots:

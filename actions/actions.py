@@ -69,7 +69,7 @@ def generate_response_dataset(k=5, querry="Чувствую себя очень 
     model = AutoModel.from_pretrained("DeepPavlov/rubert-base-cased-sentence")
     pipe = pipeline("feature-extraction", model=model, tokenizer=tokenizer)
     querry_embedding = pipe(querry)
-    dataSet = load_from_disk('/Users/mariakosyuchenko/ChatBoth thesis/russian_chatbot/chatbot_main/russian_therapy/data/respGenDataset')
+    dataSet = load_from_disk('./data/respGenDataset')
     subsetDataSet = dataSet.filter(lambda row: row['emotion']==emotion)
     ds= subsetDataSet.map(lambda x: calculate_similarity(x, querry_embedding[0][0]), load_from_cache_file=False)
     sorted_dataset = ds.sort('similarity', 
@@ -79,7 +79,7 @@ def generate_response_dataset(k=5, querry="Чувствую себя очень 
 
 
 def generate_next_response(prompt, past_sentences):
-  dataset = load_from_disk('/Users/mariakosyuchenko/ChatBoth thesis/russian_chatbot/chatbot_main/russian_therapy/data/topKdataset')
+  dataset = load_from_disk('./data/topKdataset')
   scores = dataset.map(lambda row: score(row, prompt, past_sentences), load_from_cache_file=False)
   result = scores.sort('score')
   return result[-1][prompt]
@@ -132,7 +132,7 @@ class AskForSlotActionEmotionConfirmation(Action):
     def run(
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
     ) -> List[EventType]:
-        buttons = [{"title": "joy", "payload": '/is_recent{"emotion":"joy"}'}, {"title": "anger", "payload":'/is_recent{"emotion":"anger"}'}, {"title": "fear", "payload":'/is_recent{"emotion":"fear"}'}, {"title": "sadness", "payload":'/is_recent{"emotion":"sadness"}'}]
+        buttons = [{"title": "joy", "payload": '/joy_enquire_for_protocol{"emotion":"joy"}'}, {"title": "anger", "payload":'/is_recent{"emotion":"anger"}'}, {"title": "fear", "payload":'/is_recent{"emotion":"fear"}'}, {"title": "sadness", "payload":'/is_recent{"emotion":"sadness"}'}]
         dispatcher.utter_button_message(f"Извиняюсь, Маше ещё надо поработать над маштнным обучением :-) Выберите, пожалуйста, подходящую эмоцию 'вручную'", buttons)
 
         return []
@@ -147,7 +147,7 @@ class AskIfEventWasRecent(Action):
 
         # Create a subset of EPRU dataset as measured by the similarity of user utterance to emotion utterances in the dataset for an emotion specified
         dataset = generate_response_dataset(k=5, querry=tracker.get_slot('current_feeling'), emotion=tracker.get_slot('emotion'))
-        dataset.save_to_disk('/Users/mariakosyuchenko/ChatBoth thesis/russian_chatbot/chatbot_main/russian_therapy/data/topKdataset')
+        dataset.save_to_disk('./data/topKdataset')
 
         buttons = [{"title": "Да, эта ситуация произошла недавно", "payload": '/is_protocol_6_distressing'}, {"title": "Нет, это случилочь достаточно давно", "payload":'/is_protocol_11_distressing'}]
         text = generate_next_response(prompt="Was the event recent?", past_sentences=tracker.get_slot('pastResponses'))
@@ -316,19 +316,59 @@ class ActionRecommendProtocols(Action):
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
     ) -> List[EventType]:
 
-
-        protocols = tracker.get_slot("relevant_protocols") 
-        buttons = []
-        for protocol in protocols:
-            button = dict()
-            button["title"] = protocol
-            number = dict()
-            number["number"] = protocol
-            d = json.dumps(number)
-            button["payload"] = f'/invite_to_protocol{d}'
-            buttons.append(button)
-        print(buttons)
-        dispatcher.utter_message(text = f"Представляю на выбор несколько методик", buttons=buttons)
+        if tracker.get_slot('emotion') != 'joy':
+            protocols = tracker.get_slot("relevant_protocols") 
+            buttons = []
+            for protocol in protocols:
+                button = dict()
+                button["title"] = protocol
+                number = dict()
+                number["number"] = protocol
+                d = json.dumps(number)
+                button["payload"] = f'/invite_to_protocol{d}'
+                buttons.append(button)
+            print(buttons)
+            dispatcher.utter_message(text = f"Представляю на выбор несколько методик", buttons=buttons)
+        else:
+            protocols = tracker.get_slot("relevant_protocols") 
+            print(protocols)
+            buttons = []
+            for protocol in protocols:
+                button = dict()
+                button["title"] = protocol
+                number = dict()
+                number["number"] = protocol
+                d = json.dumps(number)
+                button["payload"] = f'/invite_to_protocol{d}'
+                buttons.append(button)
+            print(buttons)
+            dispatcher.utter_message(text = f"Please choose between the following protocols", buttons=buttons)
 
         return []
+
+class ActionRecommendProtocolsForPositiveFeelings(Action):
+    def name(self) -> Text:
+        return "action_joy_enquire_for_protocol"
+
+    def run(
+        self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
+    ) -> List[EventType]:
+
+        text = "I am so glad you are feeling well. Would you like to attempt any protocols?"
+
+        buttons = []
+        yes_button = dict()
+        yes_button["title"] = "Yes I do not mind, what would you recommend?"
+        no_button = dict()
+        no_button['title'] = "No I would rather not!"
+        yes_button["payload"] = '/protocol_recommendation_follow_up'
+        no_button["payload"] = '/goodbye'
+
+        buttons.extend([yes_button, no_button]) 
+
+        # buttons = [{"title": "Yes", "payload": '/generate_response{"response_type":"positive"}'}, {"title": "No", "payload": '/generate_response{"response_type":"encouraging"}'}, {"title": "Worse", "payload": '/generate_response{"response_type":"encouraging"}'} ]
+        dispatcher.utter_message(text=text, buttons=buttons)
+
+        return [SlotSet('relevant_protocols', [9, 10, 11])]
+
 
