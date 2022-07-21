@@ -81,14 +81,6 @@ rules:
   - intent: invite_to_protocol
   - action: action_invite_to_protocol
 
-- rule: asking if strong emotions are experiences
-  steps:
-  - intent: strong_emotions
-    # entities:
-    #   - content_type: "protocols"
-  - action: action_strong_emotions
-  # - slot_was_set: 
-  #   - content_type: "protocols"
 
 - rule: additional questions loop
   steps:
