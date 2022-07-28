@@ -12,6 +12,10 @@ stories:
       - action: utter_goodbye
 
 rules:
+- rule: from emotion to checking if event caused it
+  steps:
+  - intent: is_event
+  - action: action_is_event
 - rule: Activate form
   steps:
   - intent: greet

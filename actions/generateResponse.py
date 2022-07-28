@@ -39,7 +39,7 @@ def calculate_novelty(sentence,past_sentences):
   novelty = 1 - similarity
   return novelty
 
-def score(row, prompt,past_sentences, novelty_weight=0.5, fluency_weight=0.5):
+def score(row, prompt,past_sentences, novelty_weight=0.5, fluency_weight=0.25, empathy_weight=0.25):
   if past_sentences is None:
     novelty_score = 1
   else:
@@ -49,10 +49,13 @@ def score(row, prompt,past_sentences, novelty_weight=0.5, fluency_weight=0.5):
         novelty_score = 0 
   if type(row[prompt])!=str or len(row[prompt]) < 3:
     fluency_score = 0
+    empathy_score = 0 
   else:
     fluency_score = row["ppl_"+prompt]
-  print(f"{row[prompt]} has a novelty score {novelty_score} and fluency score {fluency_score} ")
-  weighted_score = novelty_weight*novelty_score + fluency_weight*fluency_score
+    empathy_score = row["emp_"+prompt]
+  print(f"{row[prompt]} has a novelty score {novelty_score} and fluency score {fluency_score} and empathy_score {empathy_score} ")
+  weighted_score = novelty_weight*novelty_score + fluency_weight*fluency_score + empathy_weight*empathy_score
+
   return {"score": weighted_score}
 
 def add_response_to_past_responses(latest_response, past_responses):
@@ -65,7 +68,7 @@ def add_response_to_past_responses(latest_response, past_responses):
     return past_responses
 
 def generate_next_response(prompt, past_sentences):
-  dataset = load_from_disk('/Users/mariakosyuchenko/ChatBoth thesis/russian_chatbot/chatbot_main/russian_therapy/data/topKdataset')
+  dataset = load_from_disk('./data/topKdataset')
   scores = dataset.map(lambda row: score(row, prompt, past_sentences), load_from_cache_file=False)
   result = scores.sort('score')
   return result[-1][prompt]

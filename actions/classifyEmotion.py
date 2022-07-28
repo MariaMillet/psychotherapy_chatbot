@@ -13,7 +13,7 @@ class EmotionClassifier:
         return dict[class_number]
 
     def predict_emotion(self, text):
-        preds = self.classifier(text, return_all_scores=True)
+        preds = self.classifier(text, top_k=4)
         prediction = max(preds, key=lambda x: x['score'])
         prediction_label = self.int2label(int(prediction['label'][-1]))
         return prediction_label
