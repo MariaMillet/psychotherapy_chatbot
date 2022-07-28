@@ -1,32 +1,91 @@
-<!doctype html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <title>Goal Diggers website</title>
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    <script src="https://cdn.jsdelivr.net/npm/rasa-webchat/lib/index.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-    <h1>Dit is de website van de Goal Diggers.</h1>
-    <p>Welkom!</p>
-
-    <img src="/static/Goal_Diggers_Logo.jpg" alt="Goal Diggers logo" width="200"
-         height="200">
+    <body>
+    <style>
+        .rw-conversation-container .rw-header{
+            background-color: hsl(75, 56%, 78%); font-size: 15px;color: rgb(98, 174, 98);
+            font-family: Lato, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif ;
+        border: 1px solid rgb(221, 226, 239);overflow: hidden;margin-bottom: 14px; width: 700px; height:560px; }
+        .rw-conversation-container .rw-messages-container .rw-message .rw-response{
+            /* background-color: #f4f7f9;border: 1px solid #f4f7f9;
+        font-size: 13px; letter-spacing: 0.6000000238418579px; line-height: 20px; white-space: pre-wrap; width: auto;
+        
+        margin-bottom: 0px;
+        margin-left: 25px;
+        margin-right: 0px;
+        margin-top: 0px; 
+        border-radius: 0 15px 15px 15px;
+        padding: 11px 15 px;
+        text-align: left;
     
-    <div id="webchat"></div>
-        <script>
-        WebChat.default.init({
-            selector: "#webchat",
-            initPayload: "/begroeting",
-            customData: {"language": "en"}, // arbitrary custom data. Stay minimal as this will be added to the socket
-            socketUrl: "http://localhost:5005", //"http://localhost:5005", 
-            socketPath: "/socket.io/",
-            title: "Goal Diggers chatbot",
-            subtitle: "Vraag naar speeldata van de Goal Diggers",
-            params: {"storage": "session"} // can be set to "local"  or "session". details in storage section.
-        })
-        </script>
-    </div>
-</body>
+        box-sizing: border-box;
+        margin-top: 0px;
+        min-width: 0px; */
+        background-color: rgb(236, 239, 247);
+        color: rgb(37, 45, 64);
+        box-sizing: border-box;
+        margin-top: 0px;
+        min-width: 0px;
+        font-size: 13px;
+        font-family: Lato, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif ;
+        white-space: pre-wrap;}
+        .rw-conversation-container .rw-messages-container .rw-message .rw-client{background-color: rgb(98, 174, 98); font-size: 13px;
+            font-family: Lato, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif ;
+            box-sizing: border-box;
+            overflow-wrap: break-word;
+            padding-bottom: 10px;
+            padding-top: 10px;
+            color: rgb(255,255,255);
+            margin-top: 0px;
+            min-width: 0px;
+        
+        }
+        .rw-conversation-container .rw-reply {background-color: rgb(134, 175, 116); font-size: 13px;
+            border-color: rgb(134, 175, 116);
+            font-family: Lato, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif ; 
+
+        }
+        .rw-conversation-container {
+            box-sizing: border-box;
+            color: rgb(0, 0, 0);
+            display: flex;
+            flex-direction: column;
+            height: 560px;
+            margin-bottom: 0px;
+            margin-left: 0px;
+            margin-right: 0px;
+            margin-top: 0px;
+            min-width: 0px;
+            overflow-x: auto;
+            overflow-y: auto;
+            width: 700px
+        }
+
+    </style>
+        <script>!(function () {
+            let e = document.createElement("script"),
+              t = document.head || document.getElementsByTagName("head")[0];
+            (e.src =
+              "https://cdn.jsdelivr.net/npm/rasa-webchat/lib/index.js"),
+              // Replace 1.x.x with the version that you want
+              (e.async = !0),
+              (e.onload = () => {
+                window.WebChat.default(
+                  {
+                    initPayload: '/greet',
+                    customData: { language: "en" },
+                    socketUrl: "http://localhost:5005",
+                    title: 'SAT Psychotherapy chatbot',
+                    subtitle: 'Say hi and get started',
+                    profileAvatar: "robot.png",
+                    showFullScreenButton: true,
+
+                    // add other props here
+                  },
+                  null
+                );
+              }),
+              t.insertBefore(e, t.firstChild);
+          })();
+          </script>
+    </body>
 </html>
