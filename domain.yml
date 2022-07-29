@@ -19,6 +19,7 @@ intents:
   - follow_up_protocol
   - protocol_recommendation_follow_up
   - joy_enquire_for_protocol
+  - is_event
 entities:
   - emotion
   - protocols_1
@@ -146,6 +147,7 @@ actions:
   - action_respond_to_feedback
   - action_protocol_recommendation_follow_up
   - action_joy_enquire_for_protocol
+  - action_is_event
 forms:
   emotion_form:
     required_slots:
