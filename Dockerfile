@@ -1,31 +1,22 @@
+# Extend the official Rasa SDK image
+FROM rasa/rasa-sdk:undefined
 
-FROM python:3.7.7-stretch AS BASE
-
-RUN apt-get update \
-    && apt-get --assume-yes --no-install-recommends install \
-        build-essential \
-        curl \
-        git \
-        jq \
-        libgomp1 \
-        vim
-
+# Use subdirectory as working directory
 WORKDIR /app
 
-RUN pip install --no-cache-dir --upgrade pip
+# Copy any additional custom requirements, if necessary (uncomment next line)
+COPY actions/requirements-actions.txt ./
+COPY actions/classifyEmotion.py ./
+COPY actions/generateResponse.py ./
 
-RUN pip install rasa==3.1.0
-RUN pip install transformers==4.20.1
-RUN pip install torch==1.12.0
-RUN pip install datasets==2.3.2
-RUN pip install sentencepiece==0.1.96
-RUN pip install sentence-transformers==2.2.2
-RUN pip install sanic-plugin-toolkit==1.2.0
+# Change back to root user to install dependencies
+USER root
 
+# Install extra requirements for actions code, if necessary (uncomment next line)
+RUN pip install -r requirements-actions.txt
 
-#Optional step
+# Copy actions folder to working directory
+COPY ./actions /app/actions
 
-ADD config.yml config.yml
-ADD domain.yml domain.yml
-ADD credentials.yml credentials.yml
-ADD endpoints.yml endpoints.yml
+# By best practices, don't run the code with root user
+USER 1001
