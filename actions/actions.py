@@ -78,12 +78,15 @@ def generate_response_dataset(k=5, querry="Чувствую себя очень 
     return top_10_similar
 
 
-def generate_next_response(prompt, past_sentences):
+def generate_next_response(prompt, past_sentences,novelty_weight=0.5, fluency_weight=0.25, empathy_weight=0.25):
   dataset = load_from_disk('./data/topKdataset')
 #   print(dataset["Would you like to attempt protocols for joy?"])
-  scores = dataset.map(lambda row: score(row, prompt, past_sentences), load_from_cache_file=False)
+  scores = dataset.map(lambda row: score(row, prompt, past_sentences, novelty_weight, fluency_weight, empathy_weight), load_from_cache_file=False)
   result = scores.sort('score')
   return result[-1][prompt]
+
+
+
 
 
 class AskForSlotActionFeeling(Action):
@@ -93,7 +96,7 @@ class AskForSlotActionFeeling(Action):
     def run(
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
     ) -> List[EventType]:
-        dispatcher.utter_message(text="Рад вас видеть, как поживаете?")
+        dispatcher.utter_message(text=f"Рад вас видеть, как поживаете? \u270F\uFE0F")
         prompts = ['Have you strongly felt or expressed any of the following emotions towards someone?', 'Do you believe you should be the savior of someone else?', 'Do you see yourself as the victim, blaming someone else for how negative you feel?',
             'Do you feel that you are trying to control someone?', 'Are you always blaming and accusing yourself for when something goes wrong?', 'Is it possible that in previous conversations you may not have always considerdother viewpoints presented?',
             'Are you undergoing a personal crisis (experience difficulties with loved ones e.g. falling out with friends)?']
@@ -125,8 +128,12 @@ class AskForSlotActionEmotionConfirmation(Action):
         if emotion_prediction == "joy":
             buttons = [{"title": "Да мне близко чувство", "payload": '/joy_enquire_for_protocol{"emotion":"joy"}'}, {"title": "Нет, вы не угадали мое настроение", "payload":'/not_correct_prediction'}]
         else:
-            buttons = [{"title": "Да мне близко чувство", "payload": '/is_event{"emotion":"emotion_prediction"}'}, {"title": "Нет, вы не угадали мое настроение", "payload":'/not_correct_prediction'}]
-        buttons = [{"title": "Да мне близко чувство", "payload": '/is_event{"emotion":"emotion_prediction"}'}, {"title": "Нет, вы не угадали мое настроение", "payload":'/not_correct_prediction'}]
+            em = dict()
+            em["emotion"] = tracker.get_slot('emotion_prediction')
+            d = json.dumps(em)
+            # button["payload"] = f'/invite_to_protocol{d}'
+            buttons = [{"title": "Да мне близко чувство", "payload": f'/is_event{d}'}, {"title": "Нет, вы не угадали мое настроение", "payload":'/not_correct_prediction'}]
+        
         dispatcher.utter_message(text=f"Спасибо, что поделились своими чувствами. Мне кажется вы пребываете в {emotion_prediction} расположении духа, я правильно вас понял?", buttons=buttons, button_type="vertical")
         return []
 
@@ -137,7 +144,10 @@ class AskForSlotActionEmotionConfirmation(Action):
     def run(
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
     ) -> List[EventType]:
-        buttons = [{"title": "joy", "payload": '/joy_enquire_for_protocol{"emotion":"joy"}'}, {"title": "anger", "payload":'/is_event{"emotion":"anger"}'}, {"title": "fear", "payload":'/is_event{"emotion":"fear"}'}, {"title": "sadness", "payload":'/is_event{"emotion":"sadness"}'}]
+        emotions = dict()
+        emotions['joy'] = [f"Радостно \U0001F600", "joy_enquire_for_protocol"]
+        buttons = [ {"title": f"Радостно \U0001F600 ", "payload":'/joy_enquire_for_protocol{"emotion":"joy"}'}, {"title": f"Ярость \U0001F621", "payload":'/is_event{"emotion":"anger"}'}, {"title": f"Тревога \U0001F628", "payload":'/is_event{"emotion":"fear"}'}, {"title": f"Грусть \U0001F622", "payload":'/is_event{"emotion":"sadness"}'}]
+
         dispatcher.utter_button_message(f"Извиняюсь, Маше ещё надо поработать над машинным обучением :-) Выберите, пожалуйста, подходящую эмоцию 'вручную'", buttons)
 # \U0001F600 
         return []
@@ -149,7 +159,8 @@ class AskIfEventTriggeredEmotion(Action):
     def run(
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
     ) -> List[EventType]:
-
+        text = tracker.get_slot("emotion")
+        dispatcher.utter_message(text=text)
         # Create a subset of EPRU dataset as measured by the similarity of user utterance to emotion utterances in the dataset for an emotion specified
         dataset = generate_response_dataset(k=5, querry=tracker.get_slot('current_feeling'), emotion=tracker.get_slot('emotion'))
         dataset.save_to_disk('./data/topKdataset')
@@ -174,7 +185,7 @@ class AskIfEventWasRecent(Action):
         dataset.save_to_disk('./data/topKdataset')
 
         buttons = [{"title": "Да, эта ситуация произошла недавно", "payload": '/is_protocol_11_distressing'}, {"title": "Нет, это случилочь достаточно давно", "payload":'/is_protocol_6_distressing'}]
-        text = generate_next_response(prompt="Was the event recent?", past_sentences=tracker.get_slot('pastResponses'))
+        text = generate_next_response(prompt="Was the event recent?", past_sentences=tracker.get_slot('pastResponses'), novelty_weight=0.5, fluency_weight=0.25, empathy_weight=-0.1)
         # print(text)
         updated_responses = add_response_to_past_responses(latest_response=text, past_responses=tracker.get_slot('pastResponses'))
         dispatcher.utter_message(text=text, buttons=buttons)
@@ -312,7 +323,7 @@ class ActionAskForFeedback(Action):
     ) -> List[EventType]:
 
         protocol_number = tracker.get_slot("number")
-        buttons = [{"title": "Лучше", "payload": '/respond_to_feedback{"response_type":"positive"}'}, {"title": "Как и раньше", "payload": '/respond_to_feedback{"response_type":"encouraging_same"}'}, {"title": "Хуже", "payload": '/respond_to_feedback{"response_type":"encouraging_worse"}'} ]
+        buttons = [{"title": f"Лучше \U0001F601", "payload": '/respond_to_feedback{"response_type":"positive"}'}, {"title": f"Как и раньше \U0001F610", "payload": '/respond_to_feedback{"response_type":"encouraging_same"}'}, {"title": f"Хуже \U0001F612", "payload": '/respond_to_feedback{"response_type":"encouraging_worse"}'} ]
         dispatcher.utter_message(text=f"Спасибо, что нашли время и силы сделать это упражнение. Как вы сеебя ощущаете?", buttons=buttons)
         return [SlotSet("current_feeling", None), SlotSet("emotion_prediction", None)]
 
