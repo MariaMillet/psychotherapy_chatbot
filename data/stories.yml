@@ -100,3 +100,12 @@ rules:
   # - slot_was_set: 
   #   - content_type: "protocols"
 
+- rule: ask for name
+  steps:
+  - intent: personality
+    # entities:
+    #   - content_type: "protocols"
+  - action: action_ask_name
+  # - slot_was_set: 
+  #   - content_type: "protocols"
+
