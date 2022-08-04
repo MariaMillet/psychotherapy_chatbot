@@ -4,6 +4,7 @@ session_config:
   carry_over_slots_to_new_session: true
 intents:
   - greet
+  - personality
   - goodbye
   - correct_prediction
   - not_correct_prediction
@@ -25,9 +26,32 @@ entities:
   - protocols_1
   - positive_to_any_base_questions
   - number
+  - response_to_feedback
   - response_type
   - positive_protocols
+  - personality
+
 slots:
+
+  name:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_text
+      conditions:
+      - active_loop: emotion_form
+        requested_slot: name
+
+  personality:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: personality
+      conditions:
+      - active_loop: emotion_form
+        requested_slot: personality
+
   positive_protocols:
     type: list
     mappings:
@@ -40,10 +64,16 @@ slots:
     - type: custom
 
   response_type:
-    type: any
+    type: text
     mappings:
     - type: from_entity
       entity: response_type
+  
+  response_to_feedback:
+    type: text
+    mappings:
+    - type: from_entity
+      entity: response_to_feedback
 
   lastPrompt:
     type: text
@@ -132,6 +162,8 @@ responses:
     - text: Goodbye!
 actions:
   - utter_goodbye
+  - action_ask_name
+  - action_ask_personality
   - action_ask_current_feeling
   - action_ask_emotion_prediction
   - action_emotion_confirmation
@@ -151,6 +183,8 @@ actions:
 forms:
   emotion_form:
     required_slots:
+        - personality
+        - name
         - current_feeling
         - emotion_prediction
 

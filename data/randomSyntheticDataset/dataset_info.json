@@ -1,0 +1,220 @@
+{
+  "builder_name": null,
+  "citation": "",
+  "config_name": null,
+  "dataset_size": null,
+  "description": "",
+  "download_checksums": null,
+  "download_size": null,
+  "features": {
+    "Have you strongly felt or expressed any of the following emotions towards someone?": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "Do you believe you should be the savior of someone else?": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "Do you feel that you are trying to control someone?": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "Do you see yourself as the victim, blaming someone else for how negative you feel?": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "Are you always blaming and accusing yourself for when something goes wrong?": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "Is it possible that in previous conversations you may not have always considerdother viewpoints presented?": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "Are you undergoing a personal crisis (experience difficulties with loved ones e.g. falling out with friends)?": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "Was this emotion triggered by a specific event?": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "Was the event recent?": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "Did you find protocol 6 distressing?": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "Did you find protocol 11 distressing?": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "Is it ok to ask additional questions?": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "emotion": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "Would you like to attempt protocols for joy?": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "ppl_Have you strongly felt or expressed any of the following emotions towards someone?": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "ppl_Do you believe you should be the savior of someone else?": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "ppl_Do you feel that you are trying to control someone?": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "ppl_Do you see yourself as the victim, blaming someone else for how negative you feel?": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "ppl_Are you always blaming and accusing yourself for when something goes wrong?": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "ppl_Is it possible that in previous conversations you may not have always considerdother viewpoints presented?": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "ppl_Are you undergoing a personal crisis (experience difficulties with loved ones e.g. falling out with friends)?": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "ppl_Was this emotion triggered by a specific event?": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "ppl_Was the event recent?": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "ppl_Did you find protocol 6 distressing?": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "ppl_Did you find protocol 11 distressing?": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "ppl_Is it ok to ask additional questions?": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "ppl_Would you like to attempt protocols for joy?": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "emp_Have you strongly felt or expressed any of the following emotions towards someone?": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "emp_Do you believe you should be the savior of someone else?": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "emp_Do you feel that you are trying to control someone?": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "emp_Do you see yourself as the victim, blaming someone else for how negative you feel?": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "emp_Are you always blaming and accusing yourself for when something goes wrong?": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "emp_Is it possible that in previous conversations you may not have always considerdother viewpoints presented?": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "emp_Are you undergoing a personal crisis (experience difficulties with loved ones e.g. falling out with friends)?": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "emp_Was this emotion triggered by a specific event?": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "emp_Was the event recent?": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "emp_Did you find protocol 6 distressing?": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "emp_Did you find protocol 11 distressing?": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "emp_Is it ok to ask additional questions?": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    },
+    "emp_Would you like to attempt protocols for joy?": {
+      "dtype": "float64",
+      "id": null,
+      "_type": "Value"
+    }
+  },
+  "homepage": "",
+  "license": "",
+  "post_processed": null,
+  "post_processing_size": null,
+  "size_in_bytes": null,
+  "splits": null,
+  "supervised_keys": null,
+  "task_templates": null,
+  "version": null
+}
