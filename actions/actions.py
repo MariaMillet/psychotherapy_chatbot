@@ -80,18 +80,23 @@ def generate_response_dataset(k=5, querry="Чувствую себя очень 
 def generate_synthetic_dataset(k=10, emotion='anger'):
     dataSet = load_from_disk('./data/respSyntheticDataset')
     subsetDataSet = dataSet.filter(lambda row: row['emotion']==emotion)
-    max_row = len(subsetDataSet["emp_Was the event recent?"])
+    if emotion == "joy":
+        max_row = len(subsetDataSet["Would you like to attempt protocols for joy?"])
+    else:
+        max_row = len(subsetDataSet["Did you find protocol 6 distressing?"])
     random_selection = subsetDataSet.select(random.choice(max_row, 10, replace=False))
+    print(random_selection)
     return random_selection
 
 
 
-def generate_next_response(prompt, past_sentences, type, novelty_weight=0.5, fluency_weight=0.25, empathy_weight=0.25):
+def generate_next_response(prompt, past_sentences, type, novelty_weight=0.5, fluency_weight=0.25, empathy_weight=0.25, empathy_mode="medium"):
   if type=="synthetic":
     dataset = load_from_disk('./data/randomSyntheticDataset')
+    print(dataset[0]["Would you like to attempt protocols for joy?"])
   else:
     dataset = load_from_disk('./data/topKdataset')
-  scores = dataset.map(lambda row: score(row, prompt, past_sentences, novelty_weight, fluency_weight, empathy_weight), load_from_cache_file=False)
+  scores = dataset.map(lambda row: score(row, prompt, past_sentences, novelty_weight, fluency_weight, empathy_weight, empathy_mode=empathy_mode), load_from_cache_file=False)
   result = scores.sort('score')
   return result[-1][prompt]
 
@@ -108,9 +113,11 @@ class AskForSlotActionFeeling(Action):
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
     ) -> List[EventType]:
         # dispatcher.utter_message(text=f"Рад вас видеть, как поживаете? \u270F\uFE0F")
-        dispatcher.utter_message(text=f"Please select who you want to speak with \u270F\uFE0F")
-        buttons = [{"title": "Kirill", "payload": '/personality{"personality":"Kirill", "response_type":"human"}'}, {"title": "Natasha", "payload": '/personality{"personality":"Natasha", "response_type":"human"}'}, {"title": "Natasha", "payload": '/personality{"personality":"Компьюша", "response_type":"synthetic"}'}]
-        dispatcher.utter_message(text=f"Please select who you want to speak with \u270F\uFE0F", buttons=buttons)
+        # dispatcher.utter_message(text=f"Please select who you want to speak with \u270F\uFE0F")
+        buttons = [{"title": "Кирилл - выражает свои мысли ясно, логично и предельно кратко \U0001F913", "payload": '/personality{"personality":"Кирилл", "response_type":"human", "empathy_mode":"medium"}'}, {"title": "Наташа - сама доброта, общается максимаально добро и ласково \U0001F60D ", "payload": '/personality{"personality":"Наташа", "response_type":"human", "empathy_mode":"high"}'}, {"title": "Компьюша - наиболее непредскауемый робот и наболее креативный в генерации ответов. Не судите его  строго, если иногда у него не всё получается \U0001F910 ", "payload": '/personality{"personality":"Компьюша", "response_type":"synthetic", "empathy_mode":"high"}'}]
+        dispatcher.utter_message(text=f"Пожалуста, выберите с кем из наших умных и человечных \U0001F607 психологов вы бы хотели попобщаться", buttons=buttons)
+
+        
         prompts = ['Have you strongly felt or expressed any of the following emotions towards someone?', 'Do you believe you should be the savior of someone else?', 'Do you see yourself as the victim, blaming someone else for how negative you feel?',
             'Do you feel that you are trying to control someone?', 'Are you always blaming and accusing yourself for when something goes wrong?', 'Is it possible that in previous conversations you may not have always considerdother viewpoints presented?',
             'Are you undergoing a personal crisis (experience difficulties with loved ones e.g. falling out with friends)?']
@@ -127,12 +134,17 @@ class AskForSlotActionFeeling(Action):
         # dispatcher.utter_message(text=f"Рад вас видеть, как поживаете? \u270F\uFE0F")
         psychologist = tracker.get_slot("personality")
         type = tracker.get_slot("response_type")
-        dispatcher.utter_message(text=f"Hi! my name is {psychologist} and {type}. what is your name \u270F\uFE0F")
-        print(tracker.get_slot("personality"))
+        dispatcher.utter_message(text=f"Добрый день, я виртуальный психолог, меня зовут {psychologist}. Как я могу к вам обращаться?")
+        print(tracker.get_slot("empathy_mode"))
         # buttons = [{"title": "Kirill", "payload": '/joy_enquire_for_protocol{"emotion":"joy"}'}, {"title": "Natasha", "payload":'/not_correct_prediction'}]
         # prompts = ['Have you strongly felt or expressed any of the following emotions towards someone?', 'Do you believe you should be the savior of someone else?', 'Do you see yourself as the victim, blaming someone else for how negative you feel?',
             # 'Do you feel that you are trying to control someone?', 'Are you always blaming and accusing yourself for when something goes wrong?', 'Is it possible that in previous conversations you may not have always considerdother viewpoints presented?',
             # 'Are you undergoing a personal crisis (experience difficulties with loved ones e.g. falling out with friends)?']
+        # if len(tracker.get_slot(name).split())!=1:
+        #     dispatcher.utter_message(text="sorry i am only trained to understand a signle word names")
+        #     name = None
+        # else:
+        #     name = tracker.get_slot("name")
         return []
 
 class AskForSlotActionFeeling(Action):
@@ -143,8 +155,11 @@ class AskForSlotActionFeeling(Action):
     def run(
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
     ) -> List[EventType]:
-        name = tracker.get_slot("name")
-        dispatcher.utter_message(text=f"Рад вас видеть, как поживаете, {name}? \u270F\uFE0F ")
+        if len(tracker.get_slot("name").split())!=1:
+            dispatcher.utter_message(text="sorry i am only trained to understand a signle word names")
+        else:
+            name = tracker.get_slot("name")
+        dispatcher.utter_message(text=f"Очень приятно, {name}! Я практикую методику SAT, и сделаю всё, чтобы улучшить ваше душевное состояние. Для начала, опишите ,пожалуйста, как вы себя ощущаете? \u270F\uFE0F ")
         # dispatcher.utter_message(text=f"Please select who you want to speak with \u270F\uFE0F", buttons=buttons)
         # buttons = [{"title": "yes", "payload": '/joy_enquire_for_protocol{"emotion":"joy"}'}, {"title": "Нет, вы не угадали мое настроение", "payload":'/not_correct_prediction'}]
         prompts = ['Have you strongly felt or expressed any of the following emotions towards someone?', 'Do you believe you should be the savior of someone else?', 'Do you see yourself as the victim, blaming someone else for how negative you feel?',
@@ -162,7 +177,7 @@ class AskForSlotActionEmotioPrediction(Action):
         example = EmotionClassifier()
         current_feeling = tracker.get_slot("current_feeling")
         pred = example.predict_emotion(current_feeling)
-        # dispatcher.utter_message(f"Спасибо, что поделились своими чувствами. Я правильно понимаю, что вам сейчас '{pred}'")
+
         return [SlotSet("emotion_prediction",pred),FollowupAction("action_emotion_confirmation")]
 
 class AskForSlotActionEmotionConfirmation(Action):
@@ -174,16 +189,18 @@ class AskForSlotActionEmotionConfirmation(Action):
     ) -> List[EventType]:
 
         emotion_prediction = tracker.get_slot("emotion_prediction")
+        eng_to_ru = {'joy': 'радостном', 'anger': 'разозлённом', 'sadness': 'грустном', 'fear': 'встревоженном'}
+        ru_emotion_pred = eng_to_ru[emotion_prediction]
         if emotion_prediction == "joy":
-            buttons = [{"title": "Да мне близко чувство", "payload": '/joy_enquire_for_protocol{"emotion":"joy"}'}, {"title": "Нет, вы не угадали мое настроение", "payload":'/not_correct_prediction'}]
+            buttons = [{"title": "Да, мне близко это чувство", "payload": '/joy_enquire_for_protocol{"emotion":"joy"}'}, {"title": "Нет, вы не угадали мое настроение", "payload":'/not_correct_prediction'}]
         else:
             em = dict()
             em["emotion"] = tracker.get_slot('emotion_prediction')
             d = json.dumps(em)
             # button["payload"] = f'/invite_to_protocol{d}'
-            buttons = [{"title": "Да мне близко чувство", "payload": f'/is_event{d}'}, {"title": "Нет, вы не угадали мое настроение", "payload":'/not_correct_prediction'}]
+            buttons = [{"title": "Да, мне близко это чувство", "payload": f'/is_event{d}'}, {"title": "Нет, вы не угадали мое настроение", "payload":'/not_correct_prediction'}]
         
-        dispatcher.utter_message(text=f"Спасибо, что поделились своими чувствами. Мне кажется вы пребываете в {emotion_prediction} расположении духа, я правильно вас понял?", buttons=buttons, button_type="vertical")
+        dispatcher.utter_message(text=f"Спасибо, что поделились своими чувствами. Мне кажется вы пребываете в {ru_emotion_pred} расположении духа, я правильно вас понял?", buttons=buttons, button_type="vertical")
         return []
 
 class AskForSlotActionEmotionConfirmation(Action):
@@ -219,7 +236,8 @@ class AskIfEventTriggeredEmotion(Action):
             dataset.save_to_disk('./data/topKdataset')
 
         buttons = [{"title": "Да, мои переживания связанны с событием из жизни", "payload": '/is_recent'}, {"title": "Нет, просто всё накатило", "payload":'/ok_to_ask_more'}]
-        text = generate_next_response(prompt="Was this emotion triggered by a specific event?", past_sentences=tracker.get_slot('pastResponses'), type=tracker.get_slot("response_type"))
+        empathy_mode = tracker.get_slot("empathy_mode")
+        text = generate_next_response(prompt="Was this emotion triggered by a specific event?", past_sentences=tracker.get_slot('pastResponses'), type=tracker.get_slot("response_type"), empathy_mode=empathy_mode)
         # print(text)
         updated_responses = add_response_to_past_responses(latest_response=text, past_responses=tracker.get_slot('pastResponses'))
         dispatcher.utter_message(text=text, buttons=buttons)
@@ -238,8 +256,10 @@ class AskIfEventWasRecent(Action):
         # dataset.save_to_disk('./data/topKdataset')
 
         buttons = [{"title": "Да, эта ситуация произошла недавно", "payload": '/is_protocol_11_distressing'}, {"title": "Нет, это случилочь достаточно давно", "payload":'/is_protocol_6_distressing'}]
-        text = generate_next_response(prompt="Was the event recent?", past_sentences=tracker.get_slot('pastResponses'), type=tracker.get_slot("response_type"), novelty_weight=0.5, fluency_weight=0.25, empathy_weight=-0.1)
-        # print(text)
+        empathy_mode = tracker.get_slot("empathy_mode")
+        text = generate_next_response(prompt="Was the event recent?", past_sentences=tracker.get_slot('pastResponses'), type=tracker.get_slot("response_type"), novelty_weight=0.5, fluency_weight=0.25, empathy_weight=-0.1, empathy_mode=empathy_mode)
+        if len(text.split(".")) == 1:
+         text = tracker.get_slot("name") + " ," + text.lower()
         updated_responses = add_response_to_past_responses(latest_response=text, past_responses=tracker.get_slot('pastResponses'))
         dispatcher.utter_message(text=text, buttons=buttons)
         return [SlotSet('pastResponses',updated_responses)]
@@ -251,8 +271,8 @@ class Action6distressing(Action):
     def run(
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
     ) -> List[EventType]:
-
-        text = generate_next_response(prompt="Did you find protocol 6 distressing?", past_sentences=tracker.get_slot('pastResponses'), type=tracker.get_slot("response_type"))
+        empathy_mode = tracker.get_slot("empathy_mode")
+        text = generate_next_response(prompt="Did you find protocol 6 distressing?", past_sentences=tracker.get_slot('pastResponses'), type=tracker.get_slot("response_type"), empathy_mode=empathy_mode)
         updated_responses = add_response_to_past_responses(latest_response=text, past_responses=tracker.get_slot('pastResponses'))
         buttons = [{"title": "Согласен, этот метод меня встревожил", "payload": '/ok_to_ask_more{"protocols_1":[13,7]}'}, {"title": "Нет, это упражнение не вызвало у меня волнения", "payload":'/ok_to_ask_more{"protocols_1":[6]}'}]
         dispatcher.utter_message(text=text, buttons=buttons, button_type="vertical")
@@ -266,7 +286,8 @@ class Action6distressing(Action):
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
     ) -> List[EventType]:
 
-        text = generate_next_response(prompt="Did you find protocol 11 distressing?", past_sentences=tracker.get_slot('pastResponses'), type=tracker.get_slot("response_type"))
+        empathy_mode = tracker.get_slot("empathy_mode")
+        text = generate_next_response(prompt="Did you find protocol 11 distressing?", past_sentences=tracker.get_slot('pastResponses'), type=tracker.get_slot("response_type"), empathy_mode=empathy_mode)
         updated_responses = add_response_to_past_responses(latest_response=text, past_responses=tracker.get_slot('pastResponses'))
         buttons = [{"title": "Согласен, этот метод меня очень встревожил", "payload": '/ok_to_ask_more{"protocols_1":[7,8]}'}, {"title": "Нет, это упражнение не вызвало у меня волнения", "payload":'/ok_to_ask_more{"protocols_1":[11]}'}]
         dispatcher.utter_message(text=text, buttons=buttons, button_type="vertical")
@@ -280,8 +301,10 @@ class AskMoreQuestions(Action):
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
     ) -> List[EventType]:
 
-
-        text = generate_next_response(prompt="Is it ok to ask additional questions?", past_sentences=tracker.get_slot('pastResponses'), type=tracker.get_slot("response_type"))
+        empathy_mode = tracker.get_slot("empathy_mode")
+    
+        text = generate_next_response(prompt="Is it ok to ask additional questions?", past_sentences=tracker.get_slot('pastResponses'), type=tracker.get_slot("response_type"), empathy_mode=empathy_mode)
+        text = tracker.get_slot("name") + ", " + text.lower()
         updated_responses = add_response_to_past_responses(latest_response=text, past_responses=tracker.get_slot('pastResponses'))
         buttons = [{"title": "Я не против", "payload": '/additional_questions'}, {"title": "Нет, на сегодня достаточно вопросов", "payload":'/recommend_protocols{"positive_to_any_base_questions": "False"}'}]
         dispatcher.utter_message(text=text, buttons=buttons, button_type="vertical")
@@ -299,7 +322,8 @@ class AdditionalQuestions(Action):
         available_prompts = tracker.get_slot("additionalQuestionsPrompts")
         print(available_prompts)
         prompt = random.choice(available_prompts)
-        text = generate_next_response(prompt=prompt, past_sentences=tracker.get_slot('pastResponses'), type=tracker.get_slot("response_type"))
+        empathy_mode = tracker.get_slot("empathy_mode")
+        text = generate_next_response(prompt=prompt, past_sentences=tracker.get_slot('pastResponses'), type=tracker.get_slot("response_type"), empathy_mode=empathy_mode)
         updated_responses = add_response_to_past_responses(latest_response=text, past_responses=tracker.get_slot('pastResponses'))
         if len(available_prompts) == 1:
             buttons = [{"title": "Больше да, чем нет", "payload":'/recommend_protocols{"positive_to_any_base_questions": "True"}'}, {"title": "Думаю нет", "payload":'/recommend_protocols{"positive_to_any_base_questions": "False"}'}]
@@ -329,6 +353,11 @@ class ActionRecommendProtocols(Action):
         protocols = tracker.get_slot("protocols_1") 
         print(protocols)
         
+        protocols_map = {1: "Connecting with the Child" , 2: "Laughing at our Two Childhood Pictures" , 3: "Falling in Love with the Child" , 4: "Vow to Adopt the Child as Your Own Child", 5: "Maintaining a Loving Relationship with the Child", 6: "An exercise to Process the Painful Childhood Events", 7: "Protocols for Creating Zest for Life", 8: "Loosening Facial and Body Muscles", 9: "Protocols for Attachment and Love of Nature", 10: "Laughing at, and with One’s Self", 11: "Processing Current Negative Emotions", 12: "Continuous Laughter", 13: "Changing Our Perspective for Getting Over Negative Emotions", 14: "Protocols for Socializing the Child", 15: "Recognising and Controlling Narcissism and the Internal Persecutor",
+        16: "Creating an Optimal Inner Model", 17:"Solving Personal Crises", 
+        18: "Laughing at the Harmless Contradiction of Deep-Rooted Beliefs/Laughing at Trauma", 19:"Changing Ideological Frameworks for Creativity",
+        20: "Affirmations" }
+
         if positive_to_any_base_questions == "True":
             protocols_additional_questions = prompt_mapping[tracker.get_slot('lastPrompt')]
             if protocols != None:
@@ -341,14 +370,15 @@ class ActionRecommendProtocols(Action):
         buttons = []
         for protocol in protocols:
             button = dict()
-            button["title"] = protocol
+            button["title"] = protocols_map[protocol]
             number = dict()
             number["number"] = protocol
             d = json.dumps(number)
             button["payload"] = f'/invite_to_protocol{d}'
             buttons.append(button)
         print(buttons)
-        dispatcher.utter_message(text = f"Спасибо, что уделили мне ваше ценное время. Исходя из нашей беседы, я подготовил несколько методик на ваше усмотрение.", buttons=buttons)
+        name = tracker.get_slot("name")
+        dispatcher.utter_message(text = f"Спасибо, что уделили мне ваше ценное время, {name}! Исходя из нашей беседы, я подготовил несколько методик на ваше усмотрение.", buttons=buttons)
         return [SlotSet('relevant_protocols', protocols)]
 
 class ActionInviteToProtocols(Action):
@@ -425,12 +455,17 @@ class ActionRecommendProtocols(Action):
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
     ) -> List[EventType]:
 
+        protocols_map = {1: "Connecting with the Child" , 2: "Laughing at our Two Childhood Pictures" , 3: "Falling in Love with the Child" , 4: "Vow to Adopt the Child as Your Own Child", 5: "Maintaining a Loving Relationship with the Child", 6: "An exercise to Process the Painful Childhood Events", 7: "Protocols for Creating Zest for Life", 8: "Loosening Facial and Body Muscles", 9: "Protocols for Attachment and Love of Nature", 10: "Laughing at, and with One’s Self", 11: "Processing Current Negative Emotions", 12: "Continuous Laughter", 13: "Changing Our Perspective for Getting Over Negative Emotions", 14: "Protocols for Socializing the Child", 15: "Recognising and Controlling Narcissism and the Internal Persecutor",
+        16: "Creating an Optimal Inner Model", 17:"Solving Personal Crises", 
+        18: "Laughing at the Harmless Contradiction of Deep-Rooted Beliefs/Laughing at Trauma", 19:"Changing Ideological Frameworks for Creativity",
+        20: "Affirmations" }
+
         if tracker.get_slot('emotion') != 'joy':
             protocols = tracker.get_slot("relevant_protocols") 
             buttons = []
             for protocol in protocols:
                 button = dict()
-                button["title"] = protocol
+                button["title"] = protocols_map[protocol]
                 number = dict()
                 number["number"] = protocol
                 d = json.dumps(number)
@@ -444,7 +479,7 @@ class ActionRecommendProtocols(Action):
             buttons = []
             for protocol in protocols:
                 button = dict()
-                button["title"] = protocol
+                button["title"] = protocols_map[protocol]
                 number = dict()
                 number["number"] = protocol
                 d = json.dumps(number)
@@ -464,7 +499,7 @@ class ActionRecommendProtocolsForPositiveFeelings(Action):
     ) -> List[EventType]:
 
         # Creating a subset of responses to choose from
-        if tracker.get_slot('personality') == 'Natasha':
+        if tracker.get_slot('personality') == 'Наташа' or tracker.get_slot('personality') == "Кирилл":
             dataset = generate_response_dataset(k=5, querry=tracker.get_slot('current_feeling'), emotion=tracker.get_slot('emotion'))
             dataset.save_to_disk('./data/topKdataset')
         else:
@@ -472,7 +507,10 @@ class ActionRecommendProtocolsForPositiveFeelings(Action):
             synthetic_dataset.save_to_disk('./data/randomSyntheticDataset')
 
         prompt = "Would you like to attempt protocols for joy?"
-        text = generate_next_response(prompt=prompt, past_sentences=tracker.get_slot('pastResponses'), type=tracker.get_slot("response_type"))
+        type = tracker.get_slot("response_type")
+        print(type)
+        empathy_mode = tracker.get_slot("empathy_mode")
+        text = generate_next_response(prompt=prompt, past_sentences=tracker.get_slot('pastResponses'), type=tracker.get_slot("response_type"), empathy_mode=empathy_mode)
 
         buttons = []
         yes_button = dict()

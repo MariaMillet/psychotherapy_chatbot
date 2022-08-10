@@ -39,7 +39,7 @@ def calculate_novelty(sentence,past_sentences):
   novelty = 1 - similarity
   return novelty
 
-def score(row, prompt,past_sentences, novelty_weight=0.5, fluency_weight=0.25, empathy_weight=0.25):
+def score(row, prompt,past_sentences, novelty_weight=0.5, fluency_weight=0.25, empathy_weight=0.25, empathy_mode = "high"):
   if past_sentences is None:
     novelty_score = 1
   else:
@@ -47,12 +47,25 @@ def score(row, prompt,past_sentences, novelty_weight=0.5, fluency_weight=0.25, e
         novelty_score = calculate_novelty(row[prompt], past_sentences=past_sentences)
     else:
         novelty_score = 0 
+  
+  medium = dict()
+  medium = {1:0.67, 0.67:1, 0.33:0.33}
+  low = dict()
+  low = {1:0.33, 0.67: 0.67, 0.33:1}
+
   if type(row[prompt])!=str or len(row[prompt]) < 3:
     fluency_score = 0
     empathy_score = 0 
   else:
     fluency_score = row["ppl_"+prompt]
-    empathy_score = row["emp_"+prompt]
+
+    if empathy_mode == "high":
+      empathy_score = row["emp_"+prompt]
+    elif empathy_mode == "medium":
+      empathy_score = medium[row["emp_"+prompt]]
+    elif empathy_mode == "low":
+      empathy_score = low[row["emp_"+prompt]]
+
   print(f"{row[prompt]} has a novelty score {novelty_score} and fluency score {fluency_score} and empathy_score {empathy_score} ")
   weighted_score = novelty_weight*novelty_score + fluency_weight*fluency_score + empathy_weight*empathy_score
 

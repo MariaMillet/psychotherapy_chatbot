@@ -30,6 +30,7 @@ entities:
   - response_type
   - positive_protocols
   - personality
+  - empathy_mode
 
 slots:
 
@@ -68,6 +69,12 @@ slots:
     mappings:
     - type: from_entity
       entity: response_type
+    
+  empathy_mode:
+    type: text
+    mappings:
+    - type: from_entity
+      entity: empathy_mode
   
   response_to_feedback:
     type: text
