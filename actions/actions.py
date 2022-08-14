@@ -114,38 +114,31 @@ class AskForSlotActionFeeling(Action):
     ) -> List[EventType]:
         # dispatcher.utter_message(text=f"Рад вас видеть, как поживаете? \u270F\uFE0F")
         # dispatcher.utter_message(text=f"Please select who you want to speak with \u270F\uFE0F")
-        buttons = [{"title": "Кирилл - выражает свои мысли ясно, логично и предельно кратко \U0001F913", "payload": '/personality{"personality":"Кирилл", "response_type":"human", "empathy_mode":"medium"}'}, {"title": "Наташа - сама доброта, общается максимаально добро и ласково \U0001F60D ", "payload": '/personality{"personality":"Наташа", "response_type":"human", "empathy_mode":"high"}'}, {"title": "Компьюша - наиболее непредскауемый робот и наболее креативный в генерации ответов. Не судите его  строго, если иногда у него не всё получается \U0001F910 ", "payload": '/personality{"personality":"Компьюша", "response_type":"synthetic", "empathy_mode":"high"}'}]
-        dispatcher.utter_message(text=f"Пожалуста, выберите с кем из наших умных и человечных \U0001F607 психологов вы бы хотели попобщаться", buttons=buttons)
-
-        
-        prompts = ['Have you strongly felt or expressed any of the following emotions towards someone?', 'Do you believe you should be the savior of someone else?', 'Do you see yourself as the victim, blaming someone else for how negative you feel?',
-            'Do you feel that you are trying to control someone?', 'Are you always blaming and accusing yourself for when something goes wrong?', 'Is it possible that in previous conversations you may not have always considerdother viewpoints presented?',
-            'Are you undergoing a personal crisis (experience difficulties with loved ones e.g. falling out with friends)?']
+        # buttons = [{"title": "Кирилл - выражает свои мысли ясно, логично и предельно кратко \U0001F913", "payload": '/personality{"personality":"Кирилл", "response_type":"human", "empathy_mode":"medium"}'}, {"title": "Наташа - сама доброта, общается максимаально добро и ласково \U0001F60D ", "payload": '/personality{"personality":"Наташа", "response_type":"human", "empathy_mode":"high"}'}, {"title": "Компьюша - наиболее непредскауемый робот и наболее креативный в генерации ответов. Не судите его  строго, если иногда у него не всё получается \U0001F910 ", "payload": '/personality{"personality":"Компьюша", "response_type":"synthetic", "empathy_mode":"high"}'}]
+        buttons = [{"title": "Кирилл - выражает свои мысли ясно, логично и предельно кратко \U0001F913", "payload": '/personality{"personality":"Кирилл"}'}, {"title": "Наташа - сама доброта, общается максимаально добро и ласково \U0001F60D ", "payload": '/personality{"personality":"Наташа"}'}, {"title": "Компьюша - наиболее непредскауемый робот и наболее креативный в генерации ответов. Не судите его  строго, если иногда у него не всё получается \U0001F910 ", "payload": '/personality{"personality":"Компьюша"}'}]
+        dispatcher.utter_message(text=f"Пожалуста, выберите с кем из наших умных и человечных \U0001F607 психологов вы бы хотели пообщаться", buttons=buttons)
         return []
 
 class AskForSlotActionFeeling(Action):
     def name(self) -> Text:
         return "action_ask_name"
 
-
     def run(
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
     ) -> List[EventType]:
-        # dispatcher.utter_message(text=f"Рад вас видеть, как поживаете? \u270F\uFE0F")
+
         psychologist = tracker.get_slot("personality")
-        type = tracker.get_slot("response_type")
+        if psychologist == "Кирилл":
+            response_type = "human"
+            empathy_mode = "medium"
+        elif psychologist == "Наташа":
+            response_type = "human"
+            empathy_mode = "high"
+        else:
+            response_type = "synthetic"
+            empathy_mode = "high"
         dispatcher.utter_message(text=f"Добрый день, я виртуальный психолог, меня зовут {psychologist}. Как я могу к вам обращаться?")
-        print(tracker.get_slot("empathy_mode"))
-        # buttons = [{"title": "Kirill", "payload": '/joy_enquire_for_protocol{"emotion":"joy"}'}, {"title": "Natasha", "payload":'/not_correct_prediction'}]
-        # prompts = ['Have you strongly felt or expressed any of the following emotions towards someone?', 'Do you believe you should be the savior of someone else?', 'Do you see yourself as the victim, blaming someone else for how negative you feel?',
-            # 'Do you feel that you are trying to control someone?', 'Are you always blaming and accusing yourself for when something goes wrong?', 'Is it possible that in previous conversations you may not have always considerdother viewpoints presented?',
-            # 'Are you undergoing a personal crisis (experience difficulties with loved ones e.g. falling out with friends)?']
-        # if len(tracker.get_slot(name).split())!=1:
-        #     dispatcher.utter_message(text="sorry i am only trained to understand a signle word names")
-        #     name = None
-        # else:
-        #     name = tracker.get_slot("name")
-        return []
+        return [SlotSet("response_type", response_type), SlotSet("empathy_mode", empathy_mode)]
 
 class AskForSlotActionFeeling(Action):
     def name(self) -> Text:
@@ -156,15 +149,19 @@ class AskForSlotActionFeeling(Action):
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
     ) -> List[EventType]:
         if len(tracker.get_slot("name").split())!=1:
-            dispatcher.utter_message(text="sorry i am only trained to understand a signle word names")
+            dispatcher.utter_message(text="sorry i am only trained to understand a single word names")
+            name = "милый друг"
         else:
             name = tracker.get_slot("name")
         dispatcher.utter_message(text=f"Очень приятно, {name}! Я практикую методику SAT, и сделаю всё, чтобы улучшить ваше душевное состояние. Для начала, опишите ,пожалуйста, как вы себя ощущаете? \u270F\uFE0F ")
         # dispatcher.utter_message(text=f"Please select who you want to speak with \u270F\uFE0F", buttons=buttons)
         # buttons = [{"title": "yes", "payload": '/joy_enquire_for_protocol{"emotion":"joy"}'}, {"title": "Нет, вы не угадали мое настроение", "payload":'/not_correct_prediction'}]
-        prompts = ['Have you strongly felt or expressed any of the following emotions towards someone?', 'Do you believe you should be the savior of someone else?', 'Do you see yourself as the victim, blaming someone else for how negative you feel?',
-            'Do you feel that you are trying to control someone?', 'Are you always blaming and accusing yourself for when something goes wrong?', 'Is it possible that in previous conversations you may not have always considerdother viewpoints presented?',
-            'Are you undergoing a personal crisis (experience difficulties with loved ones e.g. falling out with friends)?']
+        # prompts = ['Have you strongly felt or expressed any of the following emotions towards someone?', 'Do you believe you should be the savior of someone else?', 'Do you see yourself as the victim, blaming someone else for how negative you feel?',
+        #     'Do you feel that you are trying to control someone?', 'Are you always blaming and accusing yourself for when something goes wrong?', 'Is it possible that in previous conversations you may not have always considerdother viewpoints presented?',
+        #     'Are you undergoing a personal crisis (experience difficulties with loved ones e.g. falling out with friends)?']
+        prompts = ['Do you believe you should be the savior of someone else?', 'Do you see yourself as the victim, blaming someone else for how negative you feel?',
+        'Do you feel that you are trying to control someone?', 'Are you always blaming and accusing yourself for when something goes wrong?', 'Is it possible that in previous conversations you may not have always considerdother viewpoints presented?',
+        'Are you undergoing a personal crisis (experience difficulties with loved ones e.g. falling out with friends)?']
         return [SlotSet("additionalQuestionsPrompts", prompts)]
 
 class AskForSlotActionEmotioPrediction(Action):
@@ -225,8 +222,7 @@ class AskIfEventTriggeredEmotion(Action):
     def run(
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
     ) -> List[EventType]:
-        text = tracker.get_slot("emotion")
-        dispatcher.utter_message(text=text)
+
         # Create a subset of EPRU dataset as measured by the similarity of user utterance to emotion utterances in the dataset for an emotion specified
         if tracker.get_slot('personality') == "Компьюша":
             synthetic_dataset = generate_synthetic_dataset(k=10,emotion=tracker.get_slot('emotion'))
@@ -274,7 +270,8 @@ class Action6distressing(Action):
         empathy_mode = tracker.get_slot("empathy_mode")
         text = generate_next_response(prompt="Did you find protocol 6 distressing?", past_sentences=tracker.get_slot('pastResponses'), type=tracker.get_slot("response_type"), empathy_mode=empathy_mode)
         updated_responses = add_response_to_past_responses(latest_response=text, past_responses=tracker.get_slot('pastResponses'))
-        buttons = [{"title": "Согласен, этот метод меня встревожил", "payload": '/ok_to_ask_more{"protocols_1":[13,7]}'}, {"title": "Нет, это упражнение не вызвало у меня волнения", "payload":'/ok_to_ask_more{"protocols_1":[6]}'}]
+        buttons = [{"title": "Да, этот метод меня встревожил", "payload": '/ok_to_ask_more{"protocols_1":[13,7]}'}, {"title": "Нет, это упражнение не вызвало у меня волнения", "payload":'/ok_to_ask_more{"protocols_1":[6]}'},
+        {"title": "Я ещё не делал(а) это упражнение 🤔", "payload":'/ok_to_ask_more{"protocols_1":[6]}'}]
         dispatcher.utter_message(text=text, buttons=buttons, button_type="vertical")
         return [SlotSet('pastResponses',updated_responses)]
 
@@ -289,7 +286,8 @@ class Action6distressing(Action):
         empathy_mode = tracker.get_slot("empathy_mode")
         text = generate_next_response(prompt="Did you find protocol 11 distressing?", past_sentences=tracker.get_slot('pastResponses'), type=tracker.get_slot("response_type"), empathy_mode=empathy_mode)
         updated_responses = add_response_to_past_responses(latest_response=text, past_responses=tracker.get_slot('pastResponses'))
-        buttons = [{"title": "Согласен, этот метод меня очень встревожил", "payload": '/ok_to_ask_more{"protocols_1":[7,8]}'}, {"title": "Нет, это упражнение не вызвало у меня волнения", "payload":'/ok_to_ask_more{"protocols_1":[11]}'}]
+        buttons = [{"title": "Да, этот метод меня очень встревожил", "payload": '/ok_to_ask_more{"protocols_1":[7,8]}'}, {"title": "Нет, это упражнение не вызвало у меня волнения", "payload":'/ok_to_ask_more{"protocols_1":[11]}'},
+        {"title": "Я ещё не делал(а) это упражнение 🤔", "payload":'/ok_to_ask_more{"protocols_1":[11]}'}]
         dispatcher.utter_message(text=text, buttons=buttons, button_type="vertical")
         return [SlotSet('pastResponses',updated_responses)]
 
@@ -306,7 +304,7 @@ class AskMoreQuestions(Action):
         text = generate_next_response(prompt="Is it ok to ask additional questions?", past_sentences=tracker.get_slot('pastResponses'), type=tracker.get_slot("response_type"), empathy_mode=empathy_mode)
         text = tracker.get_slot("name") + ", " + text.lower()
         updated_responses = add_response_to_past_responses(latest_response=text, past_responses=tracker.get_slot('pastResponses'))
-        buttons = [{"title": "Я не против", "payload": '/additional_questions'}, {"title": "Нет, на сегодня достаточно вопросов", "payload":'/recommend_protocols{"positive_to_any_base_questions": "False"}'}]
+        buttons = [{"title": "Я не против 🙌", "payload": '/additional_questions'}, {"title": "Нет, на сегодня достаточно вопросов 🫢", "payload":'/recommend_protocols{"positive_to_any_base_questions": "False"}'}]
         dispatcher.utter_message(text=text, buttons=buttons, button_type="vertical")
 
         return [SlotSet('pastResponses',updated_responses)]
@@ -353,10 +351,26 @@ class ActionRecommendProtocols(Action):
         protocols = tracker.get_slot("protocols_1") 
         print(protocols)
         
-        protocols_map = {1: "Connecting with the Child" , 2: "Laughing at our Two Childhood Pictures" , 3: "Falling in Love with the Child" , 4: "Vow to Adopt the Child as Your Own Child", 5: "Maintaining a Loving Relationship with the Child", 6: "An exercise to Process the Painful Childhood Events", 7: "Protocols for Creating Zest for Life", 8: "Loosening Facial and Body Muscles", 9: "Protocols for Attachment and Love of Nature", 10: "Laughing at, and with One’s Self", 11: "Processing Current Negative Emotions", 12: "Continuous Laughter", 13: "Changing Our Perspective for Getting Over Negative Emotions", 14: "Protocols for Socializing the Child", 15: "Recognising and Controlling Narcissism and the Internal Persecutor",
-        16: "Creating an Optimal Inner Model", 17:"Solving Personal Crises", 
-        18: "Laughing at the Harmless Contradiction of Deep-Rooted Beliefs/Laughing at Trauma", 19:"Changing Ideological Frameworks for Creativity",
-        20: "Affirmations" }
+        protocols_map = {1: "1. Connecting with the Child" , 
+        2: "2. Laughing at our Two Childhood Pictures" , 
+        3: "3. Falling in Love with the Child" , 
+        4: "4. Vow to Adopt the Child as Your Own Child", 
+        5: "5. Maintaining a Loving Relationship with the Child", 
+        6: "6. An exercise to Process the Painful Childhood Events", 
+        7: "7. Protocols for Creating Zest for Life", 
+        8: "8. Loosening Facial and Body Muscles", 
+        9: "9. Protocols for Attachment and Love of Nature", 
+        10: "10. Laughing at, and with One’s Self", 
+        11: "11. Processing Current Negative Emotions", 
+        12: "12. Continuous Laughter", 
+        13: "13. Changing Our Perspective for Getting Over Negative Emotions", 
+        14: "14. Protocols for Socializing the Child", 
+        15: "15. Recognising and Controlling Narcissism and the Internal Persecutor",
+        16: "16. Creating an Optimal Inner Model", 
+        17:"17. Solving Personal Crises", 
+        18: "18. Laughing at the Harmless Contradiction of Deep-Rooted Beliefs/Laughing at Trauma", 
+        19:"19. Changing Ideological Frameworks for Creativity",
+        20: "20. Affirmations" }
 
         if positive_to_any_base_questions == "True":
             protocols_additional_questions = prompt_mapping[tracker.get_slot('lastPrompt')]
@@ -364,10 +378,17 @@ class ActionRecommendProtocols(Action):
                 protocols = protocols_additional_questions + protocols
             else:
                 protocols = protocols_additional_questions
+        else:
+            if protocols != None:
+                protocols = [13] + protocols
+            else:
+                protocols = [13]
 
-        if protocols == None:
-            protocols = [1]
+        # if protocols == None:
+        #     protocols = [1]
         buttons = []
+        protocols = sorted(list(set(protocols)))
+        print(f"here are {protocols}")
         for protocol in protocols:
             button = dict()
             button["title"] = protocols_map[protocol]
@@ -389,6 +410,53 @@ class ActionInviteToProtocols(Action):
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
     ) -> List[EventType]:
 
+        protocols_map = {1: "1. Connecting with the Child" , 
+        2: "2. Laughing at our Two Childhood Pictures" , 
+        3: "3. Falling in Love with the Child" , 
+        4: "4. Vow to Adopt the Child as Your Own Child", 
+        5: "5. Maintaining a Loving Relationship with the Child", 
+        6: """6. An exercise to Process the Painful Childhood Events
+            
+            Through imagination or by drawing, you now consider your emotional world, which is the
+            emotional state of the Child, as a home with some derelict parts that you will fully
+            renovate.
+
+            Some of the rooms of the new home are intended to provide a safe haven at times of
+            distress for your Child; others establish a safe base for your Child from which to
+            understand and tackle life’s challenges.
+
+            The new home and its garden is bright and sunny; you imagine carrying out these self-
+            attachment exercises in this environment.
+
+            The unrestored basement of the new house is the remnant of the derelict house and
+            contains your negative emotions including fear, anger and despair. When you suffer from
+            these negative emotions, you imagine that your Child is trapped in this basement and
+            he/she can gradually learn to open the door of the basement, walk out and enter the bright
+            rooms, reuniting with your Adult.""",
+
+        7: "7. Protocols for Creating Zest for Life", 
+        8: "8. Loosening Facial and Body Muscles", 
+        9: "9. Protocols for Attachment and Love of Nature", 
+        10: "10. Laughing at, and with One’s Self", 
+        11: "11. Processing Current Negative Emotions", 
+        12: "12. Continuous Laughter", 
+        13: "13. Changing Our Perspective for Getting Over Negative Emotions", 
+        14: "14. Protocols for Socializing the Child", 
+        15: "15. Recognising and Controlling Narcissism and the Internal Persecutor",
+        16: "16. Creating an Optimal Inner Model", 
+        17:"17. Solving Personal Crises", 
+        18: "18. Laughing at the Harmless Contradiction of Deep-Rooted Beliefs/Laughing at Trauma", 
+        19:"19. Changing Ideological Frameworks for Creativity",
+        20: "20. Affirmations" }
+
+        protocols_instructions = protocols_map[tracker.get_slot("number")]
+        dispatcher.utter_message(text=protocols_instructions)
+        data = {"payload":"pdf_attachment", "title": "PDF Title", "url": "https://drive.google.com/file/d/1TfdZQQ8bI4WIPPWLyDFond71RER9hFFJ/view?usp=sharing"}
+        dispatcher.utter_message(json_message=data)
+       
+        
+
+
         protocol_number = tracker.get_slot("number")
         relevant_protocols = tracker.get_slot("relevant_protocols")
         if len(relevant_protocols) == 1:
@@ -409,8 +477,12 @@ class ActionAskForFeedback(Action):
     ) -> List[EventType]:
 
         protocol_number = tracker.get_slot("number")
-        buttons = [{"title": f"Лучше \U0001F601", "payload": '/respond_to_feedback{"response_to_feedback":"positive"}'}, {"title": f"Как и раньше \U0001F610", "payload": '/respond_to_feedback{"response_to_feedback":"encouraging_same"}'}, {"title": f"Хуже \U0001F612", "payload": '/respond_to_feedback{"response_to_feedback":"encouraging_worse"}'} ]
-        dispatcher.utter_message(text=f"Спасибо, что нашли время и силы сделать это упражнение. Как вы сеебя ощущаете?", buttons=buttons)
+        buttons_negative = [{"title": f"Лучше \U0001F601", "payload": '/respond_to_feedback{"response_to_feedback":"positive"}'}, {"title": f"Как и раньше \U0001F610", "payload": '/respond_to_feedback{"response_to_feedback":"encouraging_same"}'}, {"title": f"Хуже \U0001F612", "payload": '/respond_to_feedback{"response_to_feedback":"encouraging_worse"}'} ]
+        buttons_positive = [{"title": f"Ещё Лучше 😁", "payload": '/respond_to_feedback{"response_to_feedback":"positive"}'}, {"title": f"По-прежнему хорошо 😊 ", "payload": '/respond_to_feedback{"response_to_feedback":"encouraging_same"}'}, {"title": f"Хуже \U0001F612", "payload": '/respond_to_feedback{"response_to_feedback":"encouraging_worse"}'} ]
+        if tracker.get_slot("emotion") == "joy":
+            dispatcher.utter_message(text=f"Спасибо, что нашли время и силы сделать это упражнение. Как вы себя ощущаете?", buttons=buttons_positive)
+        else:
+            dispatcher.utter_message(text=f"Спасибо, что нашли время и силы сделать это упражнение. Как вы себя ощущаете?", buttons=buttons_negative)
         return [SlotSet("current_feeling", None), SlotSet("emotion_prediction", None), SlotSet("personality", None),SlotSet("emotion_prediction", None)]
 
 class ActionRespondToFeedback(Action):
@@ -424,16 +496,19 @@ class ActionRespondToFeedback(Action):
         response_type = tracker.get_slot("response_to_feedback")
         print(response_type)
         if response_type == "positive":
-            text = "Я счастлив, что ваше душевное состояние улучшшилось! С удовольствием могу предложить другую программу, если вы пожелаете."
+            text = "Я счастлив, что ваше душевное состояние улучшилось 😊! С удовольствием могу предложить другую программу, если вы пожелаете."
         if response_type == "encouraging_same":
-            text = "Я сожалею, что программа пока не повлияла на вас позитивно. Если пожелаете, я могу порекоммендовать другую программу."
+            if tracker.get_slot("emotion") == 'joy':
+                text = "Прекрасно, что ваше сомочувствие осталось по-прежнему на высоте 🤗 Если пожелаете, я могу порекоммендовать другую программу."
+            else:
+                text = "Я сожалею, что программа пока не повлияла на вас позитивно 🥲. Если пожелаете, я могу порекоммендовать другую программу."
         if response_type == "encouraging_worse":
-            text = "Я сожалею, что программа пока не повлияла на вас позитивно. Если пожелаете, я могу порекоммендовать другую программу."
+            text = "Я сожалею, что программа пока не повлияла на вас позитивно 🥲. Если пожелаете, я могу порекоммендовать другую программу."
         
-        buttons = [{"title": "No", "payload": '/goodbye'}]
+        buttons = [{"title": "❌", "payload": '/goodbye'}]
 
         yes_button = dict()
-        yes_button["title"] = "Yes"
+        yes_button["title"] = "✅"
         
         relevant_protocols = tracker.get_slot("relevant_protocols")
         if len(relevant_protocols) >= 1:
@@ -514,9 +589,9 @@ class ActionRecommendProtocolsForPositiveFeelings(Action):
 
         buttons = []
         yes_button = dict()
-        yes_button["title"] = "Я не против!"
+        yes_button["title"] = "Я не против! ✅"
         no_button = dict()
-        no_button['title'] = "Не сегодня"
+        no_button['title'] = "Не сегодня ❌"
         yes_button["payload"] = '/protocol_recommendation_follow_up'
         no_button["payload"] = '/goodbye'
 
