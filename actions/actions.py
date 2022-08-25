@@ -444,26 +444,47 @@ class ActionRecommendProtocols(Action):
         protocols = tracker.get_slot("protocols_1") 
         print(protocols)
         
-        protocols_map = {1: "1. Connecting with the Child" , 
-        2: "2. Laughing at our Two Childhood Pictures" , 
-        3: "3. Falling in Love with the Child" , 
-        4: "4. Vow to Adopt the Child as Your Own Child", 
-        5: "5. Maintaining a Loving Relationship with the Child", 
-        6: "6. An exercise to Process the Painful Childhood Events", 
-        7: "7. Protocols for Creating Zest for Life", 
-        8: "8. Loosening Facial and Body Muscles", 
-        9: "9. Protocols for Attachment and Love of Nature", 
-        10: "10. Laughing at, and with One’s Self", 
-        11: "11. Processing Current Negative Emotions", 
-        12: "12. Continuous Laughter", 
-        13: "13. Changing Our Perspective for Getting Over Negative Emotions", 
-        14: "14. Protocols for Socializing the Child", 
-        15: "15. Recognising and Controlling Narcissism and the Internal Persecutor",
-        16: "16. Creating an Optimal Inner Model", 
-        17:"17. Solving Personal Crises", 
-        18: "18. Laughing at the Harmless Contradiction of Deep-Rooted Beliefs/Laughing at Trauma", 
-        19:"19. Changing Ideological Frameworks for Creativity",
-        20: "20. Affirmations" }
+        protocols_map = {
+        # 1: "1. Connecting with the Child" , 
+        # 2: "2. Laughing at our Two Childhood Pictures" , 
+        # 3: "3. Falling in Love with the Child" , 
+        # 4: "4. Vow to Adopt the Child as Your Own Child", 
+        # 5: "5. Maintaining a Loving Relationship with the Child", 
+        # 6: "6. An exercise to Process the Painful Childhood Events", 
+        # 7: "7. Protocols for Creating Zest for Life", 
+        # 8: "8. Loosening Facial and Body Muscles", 
+        # 9: "9. Protocols for Attachment and Love of Nature", 
+        # 10: "10. Laughing at, and with One’s Self", 
+        # 11: "11. Processing Current Negative Emotions", 
+        # 12: "12. Continuous Laughter", 
+        # 13: "13. Changing Our Perspective for Getting Over Negative Emotions", 
+        # 14: "14. Protocols for Socializing the Child", 
+        # 15: "15. Recognising and Controlling Narcissism and the Internal Persecutor",
+        # 16: "16. Creating an Optimal Inner Model", 
+        # 17:"17. Solving Personal Crises", 
+        # 18: "18. Laughing at the Harmless Contradiction of Deep-Rooted Beliefs/Laughing at Trauma", 
+        # 19:"19. Changing Ideological Frameworks for Creativity",
+        # 20: "20. Affirmations"
+        1: "1. Связь с ребенком",
+        2: "2. Смеемся над двумя нашими детскими картинками",
+        3: "3. Влюбиться в ребенка",
+        4: "4. Обет усыновить ребенка как собственного ребенка",
+        5: "5. Поддержание любовных отношений с ребенком",
+        6: "6. Упражнение для обработки болезненных событий детства",
+        7: "7. Протоколы создания интереса к жизни",
+        8: "8. Расслабление мышц лица и тела",
+        9: "9. Протоколы привязанности и любви к природе",
+        10: "10. Смеяться над собой и над собой",
+        11: "11. Обработка текущих негативных эмоций",
+        12: "12. Непрерывный смех",
+        13: "13. Изменение нашего взгляда на преодоление негативных эмоций",
+        14: "14. Протоколы социализации ребенка",
+        15: "15. Распознавание и контроль нарциссизма и внутреннего преследователя",
+        16: "16. Создание оптимальной внутренней модели",
+        17: "17. Решение личных кризисов",
+        18: "18. Смеясь над безобидным противоречием глубоко укоренившихся убеждений / Смеясь над травмой",
+        19: "19. Изменение идеологических рамок творчества",
+        20: "20. Аффирмации" }
 
         if positive_to_any_base_questions == "True":
             protocols_additional_questions = prompt_mapping[tracker.get_slot('lastPrompt')]
@@ -503,90 +524,177 @@ class ActionInviteToProtocols(Action):
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
     ) -> List[EventType]:
 
-        protocols_map = {1: "1. Connecting with the Child" , 
-        2: "2. Laughing at our Two Childhood Pictures" , 
-        3: "3. Falling in Love with the Child" , 
-        4: "4. Vow to Adopt the Child as Your Own Child", 
-        5: "5. Maintaining a Loving Relationship with the Child", 
-        6: """6. An exercise to Process the Painful Childhood Events
-            With closed eyes, recall a painful scene from childhood e.g. emotional or physical abuse in as much detail as possible, 
-            and associate the face of the child you were with your unhappy photo. After recalling this event and the related emotions, imagine your adult self approaching and embracing the child like
-            a parent embracing a child in distress.
-            While your eyes are still closed, continue to imagine supporting and cuddling the child, loudly supporting them (Examples: “Why are you hitting my child?” and “My darling, I will not let them hurt you any more.”). 
-            Massage your face while doing so, which we interpret as cuddling the child..""",
-
-        7: """                      7. Protocols for Creating Zest for Life
-        Using a mirror, imagine the reflection is your childhood self and loudly recite to it your selected happy love songs, using your entire body. 
-        Repeat songs and poems in many different circumstances e.g. while walking on the street or doing housework, to be able to integrate them into your life.""", 
-        8: """                      8. Loosening Facial and Body Muscles
-           You should loosen your muscles at least twice a day as you sing with your face and entire body, as if playing, dancing, laughing and having fun with the child as parents do with children.""", 
-        9: """                      9. Protocols for Attachment and Love of Nature
-            To create an attachment with nature, you should visit a park or forest and spend time admiring nature, e.g. admiring a beautiful tree, as if seeing its branches and leaves for the first time. 
-            Repeat continuously and with different trees until you feel you have formed an attachment with nature. 
-            This will help to modulate your emotions and you will want to spend more time with nature each day.""", 
-        10: """                     Method 10. Laughing at, and with One’s Self
-            Begin laughing with yourself about a small accomplishment e.g. in sports, housework, or any other task, however small or unimportant. 
-            With every small accomplishment, you should smile as if victorious, and gradually change this smile to laughter, and make this laughter last longer and longer. 
-            By practising this you will be able to smile and laugh without ridicule about anything you have said or done in the past while maintaining compassion for your childhood self.""", 
-        11: """                     11. Processing Current Negative Emotions
-            With closed eyes, imagine the unhappy photo and project the unhappy emotions, e.g. anger, sorrow, towards the photo that represents the child. 
-            As with Type 6, we make contact with our adult self to attend to and care for the child to support the child and modulate the child’s negative emotions.
-            While projecting these negative emotions, loudly reassure the child and massage your own face, which we interpret as cuddling the child. 
-            Continue this until you have contained the negative emotions, at which point you can switch to focusing on the happy photo.""", 
-        12: """12. Continuous Laughter
-            At a time when you are alone, you should open your mouth slightly, loosen your face muscles, form a Duchenne smile and slowly repeat one of the following phrases as if laughing: eh, eh, eh, eh; ah, ah, ah, ah; oh, oh, oh, oh; uh, uh, uh, uh; or ye, ye, ye, ye.
-            If a subject is needed for laughter, you can think about the silliness of the exercise. This exercise is a good antidote for stress.""", 
-        13: """13. Changing Our Perspective for Getting Over Negative Emotions
-            To break free of the gravitational field of powerful negative patterns that emerge when we are stuck in the storeroom of negative emotions, or the “psychological abyss”, stare at the black vase in the Gestalt vase picture (below). When you see the white faces, laugh out loud.
-            Having created a positive powerful pattern of love with the child through previous exercises, you can now depart from the field of negative patterns by singing your happy love song to enter the gravitational field of love for the child instead.
-            This is like changing our interpretation of the above image and instead of seeing a black vase of negative emotions discovering two white faces, you see the child and the adult self who are now looking at each other.""", 
-        14: """14. Protocols for Socializing the Child
-                By repeating protocols 1-13 you can reduce negative emotions and increase positive affects. 
-                You should gradually be able to perform these exercises with eyes open and can integrate them into your daily life. You should be able to extend compassion for the child to other people. The adult self should become aware of any narcissistic tendencies or anti-social feelings of the child e.g. envy, jealousy, greed, hatred, mistrust, malevolence, controlling behavior and revengefulness.
-                The adult self can behave like a parent to contain these emotions and discourage anti-social feelings and attitudes of the child by expressing affection to the child and simulating cuddles by massaging your face.
-                The adult self should try to direct the child’s anger and negative energy towards playing, creativity and development. As the child’s positive affects increase and his/her negative affects decrease, by expressing positive emotions he/she can attract more positive reactions from others, and in turn gain a more positive outlook toward others.""", 
-        15: """15. Recognising and Controlling Narcissism and the Internal Persecutor
-                The adult self becomes aware of the facets of the trauma triangle: internal persecutor, victim, and rescuer. The adult self examines the effects of the triangle (narcissism, lack of creativity) in daily life and previous experiences.
-                Your adult self should then review an important life experience and your social and political views as an adult, with awareness of how the internal persecutor operates. Your adult self should then create a list of examples from own experiences about how the internal persecutor operates, and carefully analyse these for examples of being drawn to trauma, being traumatized by the internal persecutor, and projecting the internal persecutor.
-                You should be able to then re-evaluate your own experiences, control the internal persecutor and narcissism and be able to develop creativity.""",
-        16: """16. Creating an Optimal Inner Model
-                With awareness of the internal persecutor, we will recognise emotions of the child that were learned from parents or through interactions with them. With the guidance of the adult self, who can transfer
-                compassion for the child to others, the child will learn to avoid projecting the internal persecutor (which would lead to them becoming the victim or rescuer).""", 
-        17:"""17. Solving Personal Crises
-                As you continue to practice the protocol for modulating negative affects and the protocol for laughter, ask your child the following:
-                • How can you see the crisis as a way of becoming stronger? (ha ha ha)
-                • How can you interpret the crisis as a way of reaching your high goal? (ha ha ha)
-                • Has the internal persecutor been projecting onto others again?
-                The adult self asks the following questions:
-                • What is the similarity between this crisis and ones I have faced before?
-                • How is it similar to the family crisis I experienced as a child?
-                • Aren’t the other person’s positive attributes greater than his/her negative ones?
-                • How would a mature person interpret the crisis in comparison to my child?
-                • Can I see it from the perspective of someone else?
-                • Can I put myself in their place and understand their affects?
-                • Given my new inner working model can I find a way to calm the people involved in the crisis so we can find a better solution for it?
-                • If not, can I respectfully maintain my distance and end the argument?""", 
-        18: """18. Laughing at the Harmless Contradiction of Deep-Rooted Beliefs/Laughing at Trauma
-        (i): Laughing at the harmless contradiction of deep-rooted beliefs
-            “To those human beings who are of any concern to me I wish suffering, desolation, sickness, ill- treatment, indignities—I wish that they should not remain unfamiliar with profound self-contempt, the torture of self-mistrust, the wretchedness of the vanquished: I have no pity for them, because I wish them the only thing that can prove today whether one is worth anything or not—that one endures.”
-            This is meaningful with, “What doesn’t kill me makes me stronger.” Nietzsche’s wish is funny and a harmless contradiction of our deep-rooted beliefs. As we read the quote above, we remember our past sufferings and begin to laugh out loud when we get to “...I wish suffering...”
-            (i) continued: Laughing at trauma
-            First, visualize a painful event that took place in the distant past that you have struggled with for a long time, and despite its painfulness try to see a positive impact it has had. We start with a painful event that happened in the distant past, so that by now we have been able to adjust our negative affects toward it. After repeated daily exercises, once we have experienced the forceful effectiveness of laughing at distant problems, we can gradually begin to laugh at more recent painful memories.
-            (ii): Laughing at trauma
-            In expectation of hearing a funny joke we loosen our facial muscles, slightly open our mouths, and to grasp the incongruity in the joke we move our eyebrows up as a sign of surprise. As we repeat the sentences out loud, we slowly begin to laugh as we wait for the second part. And once we get to the first sentence of the second part, which is in complete contrast to our beliefs, we laugh out loud.
-            Not only should you: bear it, accept it, try to deal with it, tolerate its memory, try harder to endure its memory, adapt yourself to its memory, analyze and understand it and by doing so modulate your negative emotions and learn lessons for the future, try to soften your thoughts, depressive emotions, and anxieties, try to ...
-            Like Nietzsche’s wish consider it a cherished treasure (ha ha ha...), treasure it with great love (ha ha ha...), welcome its challenges with all your heart (ha ha ha...), consider it a good omen with all your heart (ha ha ha...), consider its challenges a great fortune (ha ha ha...), celebrate its memory (ha ha ha...), celebrate its memory with great joy (ha ha ha...), consider it a true love (ha ha ha...), consider it a true love with great passion and intimacy (ha ha ha...) ...
-            After repeated practice of the laughing exercises you can begin to apply it to things that worry you in the present and the future.""", 
-        19:"""19. Changing Ideological Frameworks for Creativity
-            We challenge our usual ideological framework to weaken one-sided patterns and encourage spontaneity and the examination of issues from multiple perspectives. Practice with subjects that you have deep- rooted beliefs and are excited about e.g. anything from political/social issues to ideas on marriage and sexuality. For instance, examine the topic of racism and consider whether you have any latent racism and consider this subject in the dual role of proponent and opponent.
-            Repeat with topics where you may have stronger views e.g. marriage and sexual orientation. If you are politically in the center, consider the subject both from a leftist and rightist point of view and try to understand both sides of the issue and see the subject from three perspectives.""",
-        20: """20. Affirmations
+        protocols_map = {1: "1. Связь с ребенком",
+        2: "2. Смеемся над двумя нашими детскими картинками",
+        3: "3. Влюбиться в ребенка",
+        4: "4. Обет усыновить ребенка как собственного ребенка",
+        5: "5. Поддержание добрых отношений с ребенком",
+        6: """6. Упражнение для обработки болезненных событий детства
+            С закрытыми глазами вспомните болезненную сцену из детства -  эмоциональное или физическое насилие как можно подробнее,
+            и свяжите лицо ребенка, которым вы были, со своей несчастной фотографией. Вспомнив это событие и связанные с ним эмоции, представьте, что ваше взрослое «я» приближается к ребенку и обнимает его, словно
+            родитель обнимает ребенка в беде.
+            Пока ваши глаза еще закрыты, продолжайте представлять, как вы поддерживаете и утешаете ребенка, громко поддерживаете его (Примеры: «Почему ты причиняешь боль моему ребёнку?» и «Дорогой мой, я не позволю им больше причинять тебе боль.»).
+            При этом массируйте лицо, что мы интерпретируем как обнимание ребенка..""",
+        7: """Протоколы для создания интереса к жизни
+        Используя зеркало, представьте, что отражение — это ваше детство, и громко продекламируйте ему выбранные вами счастливые песни о любви, используя все свое тело.
+        Повторяйте песни и стихи в самых разных обстоятельствах, например. во время прогулки по улице или выполнения работы по дому, чтобы иметь возможность интегрировать их в свою жизнью""",
+        8: """8. Расслабление мышц лица и тела
+           Вы должны расслаблять мышцы не менее двух раз в день, когда поете лицом и всем телом, как бы играя, танцуя, смеясь и веселясь с ребенком, как это делают родители с детьми.""", 
+        9: """9. Протоколы привязанности и любви к природе
+            Чтобы создать привязанность к природе, вы должны посетить парк или лес и провести время, любуясь природой, например. любуясь красивым деревом, словно впервые видя его ветки и листья.
+            Повторяйте непрерывно и с разными деревьями, пока не почувствуете, что у вас сформировалась привязанность к природе.
+            Это поможет регулировать ваши эмоции, и вы захотите проводить больше времени с природой каждый день. """, 
+        10: """Метод 10. Смеяться над собой и над собой
+            Начните смеяться про себя над небольшим достижением, например. в спорте, работе по дому или любой другой задаче, какой бы маленькой или неважной она ни была.
+            При каждом маленьком свершении вы должны улыбаться, как победоносную, и постепенно менять эту улыбку на смех, и делать так, чтобы этот смех длился все дольше и дольше.
+            Практикуя это, вы сможете улыбаться и смеяться без насмешек над всем, что вы сказали или сделали в прошлом, сохраняя при этом сострадание к себе в детстве.""", 
+        11: """11. Обработка текущих негативных эмоций
+            С закрытыми глазами представьте несчастную фотографию и спроецируйте несчастные эмоции, например. гнев, печаль по отношению к фотографии, на которой изображен ребенок.
+            Как и в случае с типом 6, мы вступаем в контакт со своим взрослым «я», чтобы заботиться о ребенке, поддерживать его и модулировать его негативные эмоции.
+            Проецируя эти негативные эмоции, громко успокойте ребенка и помассируйте свое лицо, что мы интерпретируем как объятие ребенка.
+            Продолжайте это до тех пор, пока не сдержите негативные эмоции, после чего вы можете переключиться на счастливую фотографию.""", 
+        12: """12. Непрерывный смех
+            В то время, когда вы находитесь в одиночестве, следует приоткрыть рот, расслабить мышцы лица, изобразить улыбку Дюшенна и медленно, словно смеясь, повторить одну из следующих фраз: э, э, э, э; Ах ах ах ах; ой ой ой ой; ах, ах, ах, ах; или вы, вы, вы, вы.
+            Если предмет нужен для смеха, можно подумать о глупости упражнения. Это упражнение является хорошим противоядием от стресса.""", 
+        13: """13. Изменение нашего взгляда на преодоление негативных эмоций
+            Чтобы вырваться из гравитационного поля мощных негативных паттернов, возникающих, когда мы застреваем в кладовой негативных эмоций, или в «психологической бездне», посмотрите на черную вазу на гештальт-картинке с вазой (ниже). Когда вы увидите белые лица, смейтесь в голос.
+            Создав позитивный мощный паттерн любви с ребенком с помощью предыдущих упражнений, теперь вы можете выйти из поля негативных паттернов, напев свою счастливую песню о любви, чтобы вместо этого войти в гравитационное поле любви к ребенку.
+            Это похоже на изменение нашей интерпретации приведенного выше изображения, и вместо того, чтобы видеть черную вазу с негативными эмоциями, обнаруживающую два белых лица, вы видите ребенка и взрослое «я», которые теперь смотрят друг на друга.""", 
+        14: """14. Протоколы социализации ребенка
+                Повторяя протоколы 1-13, вы можете уменьшить отрицательные эмоции и усилить положительные эмоции.
+                Вы должны постепенно научиться выполнять эти упражнения с открытыми глазами и интегрировать их в свою повседневную жизнь. Вы должны быть в состоянии распространить сострадание к ребенку на других людей. Взрослое «я» должно осознавать любые нарциссические наклонности или антисоциальные чувства ребенка, например: зависть, ревность, жадность, ненависть, недоверие, недоброжелательность, контролирующее поведение и мстительность.
+                Взрослое «я» может вести себя как родитель, чтобы сдерживать эти эмоции и препятствовать антисоциальным чувствам и отношениям ребенка, выражая привязанность к ребенку и имитируя объятия, массируя лицо.
+                Взрослое «я» должно постараться направить гнев и негативную энергию ребенка на игру, творчество и развитие. По мере того, как положительные аффекты ребенка увеличиваются, а его / ее негативные аффекты уменьшаются, выражая положительные эмоции, он / она может вызвать больше положительных реакций со стороны других и, в свою очередь, получить более позитивное отношение к другим.""", 
+        15: """15. Распознавание и контроль нарциссизма и внутреннего преследователя
+                Взрослое «я» начинает осознавать грани травматического треугольника: внутренний преследователь, жертва и спасатель. Взрослое «я» исследует влияние треугольника (нарциссизм, отсутствие творчества) в повседневной жизни и в предыдущем опыте.
+                Затем ваше взрослое «я» должно пересмотреть важный жизненный опыт и свои социальные и политические взгляды во взрослом возрасте, осознавая, как действует внутренний преследователь. Затем ваше взрослое «я» должно составить список примеров из собственного опыта о том, как действует внутренний преследователь, и тщательно проанализировать их на наличие примеров вовлечения в травму, травмирования внутренним преследователем и проецирования внутреннего преследователя.
+                Затем вы должны быть в состоянии переоценить свой собственный опыт, контролировать внутреннего преследователя и нарциссизм и быть в состоянии развивать творческие способности.""",
+        16: """16. Создание оптимальной внутренней модели
+                Осознавая внутреннего преследователя, мы распознаем эмоции ребенка, которым научились у родителей или в ходе взаимодействия с ними. Под руководством взрослого «я», которое может передать
+                сострадание ребенка к другим, ребенок научится избегать проецирования внутреннего преследователя (что приведет к тому, что он станет жертвой или спасителем).""", 
+        17:"""17. Решение личных кризисов
+                Продолжая практиковать протокол модуляции негативных эмоций и протокол смеха, спросите у ребенка следующее:
+                • Как вы можете рассматривать кризис как способ стать сильнее? (ха-ха-ха)
+                • Как вы можете интерпретировать кризис как способ достижения высокой цели? (ха-ха-ха)
+                • Внутренний преследователь снова проецировался на других?
+                Взрослое Я задает следующие вопросы:
+                • В чем сходство этого кризиса с теми, с которыми я сталкивался раньше?
+                • Чем это похоже на семейный кризис, который я пережил в детстве?
+                • Разве положительные качества другого человека не преобладают над его/ее отрицательными?
+                • Как зрелый человек интерпретировал бы кризис по сравнению с моим ребенком?
+                • Могу ли я увидеть это с точки зрения кого-то другого?
+                • Могу ли я поставить себя на их место и понять их влияние?
+                • Учитывая мою новую внутреннюю рабочую модель, могу ли я найти способ успокоить людей, вовлеченных в кризис, чтобы мы могли найти для него лучшее решение?
+                • Если нет, могу ли я сохранить дистанцию ​​и закончить спор?""", 
+        18: """18. Смеяться над безобидным противоречием глубоко укоренившихся убеждений/смех над травмой
+        (i): Смеяться над безобидным противоречием глубоко укоренившихся убеждений.
+            «Тем человеческим существам, которые касаются меня, я желаю страданий, одиночества, болезней, дурного обращения, унижений, — я желаю, чтобы они не оставались чужды глубокого презрения к себе, муки недоверия к себе, убожества побежденных: мне их не жалко, потому что я желаю им единственного, что может сегодня доказать, достоин человек чего-либо или нет, — чтобы он выстоял».
+            Это имеет смысл с: «Что меня не убивает, делает меня сильнее». Желание Ницше смешно и безобидно противоречит нашим глубоко укоренившимся убеждениям. Читая приведенную выше цитату, мы вспоминаем свои прошлые страдания и начинаем громко смеяться, когда доходим до «…желаю страданий…»
+            (i) продолжение: Смеяться над травмой
+            Во-первых, визуализируйте болезненное событие, которое произошло в далеком прошлом, с которым вы боролись долгое время, и, несмотря на его болезненность, постарайтесь увидеть положительное влияние, которое оно оказало. Мы начинаем с болезненного события, произошедшего в далеком прошлом, так что к настоящему времени мы были в состоянии приспособить к нему наши негативные аффекты. После повторяющихся ежедневных упражнений, как только мы испытаем сильную эффективность смеха над отдаленными проблемами, мы можем постепенно начать смеяться над более недавними болезненными воспоминаниями.
+            (ii): Смех над травмой
+            В ожидании смешной шутки мы расслабляем мышцы лица, приоткрываем рот, а чтобы уловить несоответствие шутки, в знак удивления поднимаем брови вверх. Когда мы повторяем предложения вслух, мы медленно начинаем смеяться, ожидая второй части. И как только мы доходим до первого предложения второй части, которое полностью противоречит нашим убеждениям, мы громко смеемся.
+            Вы должны не только: терпеть, принимать, пытаться справляться с этим, терпеть его память, усерднее переносить ее память, приспосабливаться к ее памяти, анализировать и понимать ее и тем самым модулировать свои негативные эмоции и извлекать уроки для себя. будущее, постарайтесь смягчить свои мысли, депрессивные эмоции и тревоги, постарайтесь...
+            Подобно пожеланию Ницше, считайте его заветным сокровищем (ха-ха-ха...), дорожите им с великой любовью (ха-ха-ха...), приветствуйте его вызовы всем сердцем (ха-ха-ха...), считайте его доброе предзнаменование от всего сердца (ха-ха-ха...), считай его трудности большой удачей (ха-ха-ха...), празднуй его память (ха-ха-ха...), празднуй его память с великой радостью (ха ха-ха...), считайте это настоящей любовью (ха-ха-ха...), считайте это настоящей любовью с большой страстью и близостью (ха-ха-ха...)...
+            После многократной практики смеховых упражнений вы можете начать применять их к вещам, которые беспокоят вас в настоящем и будущем.
+            """, 
+        19:"""19. Изменение идеологических рамок творчества
+            Мы бросаем вызов нашим обычным идеологическим рамкам, чтобы ослабить односторонние модели и поощрять спонтанность и рассмотрение вопросов с разных точек зрения. Практикуйтесь с предметами, в которых у вас есть глубоко укоренившиеся убеждения и которые вас волнуют, например. что угодно, от политических/социальных вопросов до идей о браке и сексуальности. Например, изучите тему расизма и подумайте, есть ли у вас скрытый расизм, и рассмотрите эту тему в двойной роли сторонника и противника.
+            Повторите с темами, в которых у вас могут быть более сильные взгляды, например. брак и сексуальная ориентация. Если вы политически в центре, рассмотрите предмет как с левой, так и с правой точки зрения и постарайтесь понять обе стороны вопроса и увидеть предмет с трех точек зрения.""",
+        20: """20. Аффирмации
         
-        Put together a list of instructive sayings by different important figures. Choose ones that have an impact on you from the start and can provide you with strength in the long path for reaching your ultimate goal. Read them out loud.
-        A few examples:
-        • “My formula for greatness in a human being is Amor Fati: that one wants nothing to be other than it is, not in the future, not in the past, not in all eternity.” (Nietzsche)
-        • “I assess the power of a will by how much resistance, pain, torture it endures and knows how to turn it to its advantage.” (Nietzsche)
-        • Life is not easy. At times we inevitably suffer from hopelessness and paranoia unless if we have an ideal goal that helps us surpass suffering, weakness, and betrayals.” (Bronstein)""" }
+        Составьте список поучительных высказываний различных важных личностей. Выбирайте те, которые повлияют на вас с самого начала и придадут силы на долгом пути к достижению конечной цели. Прочтите их вслух.
+        Несколько примеров:
+        • «Моя формула величия в человеке — это Amor Fati: человек не хочет быть ничем иным, кроме как тем, что он есть, ни в будущем, ни в прошлом, ни во всей вечности». (Ницше)
+        • «Силу воли я оцениваю по тому, сколько сопротивления, боли, пыток она выдерживает и умеет обратить в свою пользу». (Ницше)
+        • Жизнь не легка. Иногда мы неизбежно страдаем от безнадежности и паранойи, если только у нас нет идеальной цели, которая помогает нам преодолеть страдания, слабость и предательство». (Бронштейн)""" }
+
+
+
+        # 1: "1. Connecting with the Child" , 
+        # 2: "2. Laughing at our Two Childhood Pictures" , 
+        # 3: "3. Falling in Love with the Child" , 
+        # 4: "4. Vow to Adopt the Child as Your Own Child", 
+        # 5: "5. Maintaining a Loving Relationship with the Child", 
+        # 6: """6. An exercise to Process the Painful Childhood Events
+        #     With closed eyes, recall a painful scene from childhood e.g. emotional or physical abuse in as much detail as possible, 
+        #     and associate the face of the child you were with your unhappy photo. After recalling this event and the related emotions, imagine your adult self approaching and embracing the child like
+        #     a parent embracing a child in distress.
+        #     While your eyes are still closed, continue to imagine supporting and cuddling the child, loudly supporting them (Examples: “Why are you hitting my child?” and “My darling, I will not let them hurt you any more.”). 
+        #     Massage your face while doing so, which we interpret as cuddling the child..""",
+        
+        # 7: """                      7. Protocols for Creating Zest for Life
+        # Using a mirror, imagine the reflection is your childhood self and loudly recite to it your selected happy love songs, using your entire body. 
+        # Repeat songs and poems in many different circumstances e.g. while walking on the street or doing housework, to be able to integrate them into your life.""", 
+        # 8: """                      8. Loosening Facial and Body Muscles
+        #    You should loosen your muscles at least twice a day as you sing with your face and entire body, as if playing, dancing, laughing and having fun with the child as parents do with children.""", 
+        # 9: """                      9. Protocols for Attachment and Love of Nature
+        #     To create an attachment with nature, you should visit a park or forest and spend time admiring nature, e.g. admiring a beautiful tree, as if seeing its branches and leaves for the first time. 
+        #     Repeat continuously and with different trees until you feel you have formed an attachment with nature. 
+        #     This will help to modulate your emotions and you will want to spend more time with nature each day.""", 
+        # 10: """                     Method 10. Laughing at, and with One’s Self
+        #     Begin laughing with yourself about a small accomplishment e.g. in sports, housework, or any other task, however small or unimportant. 
+        #     With every small accomplishment, you should smile as if victorious, and gradually change this smile to laughter, and make this laughter last longer and longer. 
+        #     By practising this you will be able to smile and laugh without ridicule about anything you have said or done in the past while maintaining compassion for your childhood self.""", 
+        # 11: """                     11. Processing Current Negative Emotions
+        #     With closed eyes, imagine the unhappy photo and project the unhappy emotions, e.g. anger, sorrow, towards the photo that represents the child. 
+        #     As with Type 6, we make contact with our adult self to attend to and care for the child to support the child and modulate the child’s negative emotions.
+        #     While projecting these negative emotions, loudly reassure the child and massage your own face, which we interpret as cuddling the child. 
+        #     Continue this until you have contained the negative emotions, at which point you can switch to focusing on the happy photo.""", 
+        # 12: """12. Continuous Laughter
+        #     At a time when you are alone, you should open your mouth slightly, loosen your face muscles, form a Duchenne smile and slowly repeat one of the following phrases as if laughing: eh, eh, eh, eh; ah, ah, ah, ah; oh, oh, oh, oh; uh, uh, uh, uh; or ye, ye, ye, ye.
+        #     If a subject is needed for laughter, you can think about the silliness of the exercise. This exercise is a good antidote for stress.""", 
+        # 13: """13. Changing Our Perspective for Getting Over Negative Emotions
+        #     To break free of the gravitational field of powerful negative patterns that emerge when we are stuck in the storeroom of negative emotions, or the “psychological abyss”, stare at the black vase in the Gestalt vase picture (below). When you see the white faces, laugh out loud.
+        #     Having created a positive powerful pattern of love with the child through previous exercises, you can now depart from the field of negative patterns by singing your happy love song to enter the gravitational field of love for the child instead.
+        #     This is like changing our interpretation of the above image and instead of seeing a black vase of negative emotions discovering two white faces, you see the child and the adult self who are now looking at each other.""", 
+        # 14: """14. Protocols for Socializing the Child
+        #         By repeating protocols 1-13 you can reduce negative emotions and increase positive affects. 
+        #         You should gradually be able to perform these exercises with eyes open and can integrate them into your daily life. You should be able to extend compassion for the child to other people. The adult self should become aware of any narcissistic tendencies or anti-social feelings of the child e.g. envy, jealousy, greed, hatred, mistrust, malevolence, controlling behavior and revengefulness.
+        #         The adult self can behave like a parent to contain these emotions and discourage anti-social feelings and attitudes of the child by expressing affection to the child and simulating cuddles by massaging your face.
+        #         The adult self should try to direct the child’s anger and negative energy towards playing, creativity and development. As the child’s positive affects increase and his/her negative affects decrease, by expressing positive emotions he/she can attract more positive reactions from others, and in turn gain a more positive outlook toward others.""", 
+        # 15: """15. Recognising and Controlling Narcissism and the Internal Persecutor
+        #         The adult self becomes aware of the facets of the trauma triangle: internal persecutor, victim, and rescuer. The adult self examines the effects of the triangle (narcissism, lack of creativity) in daily life and previous experiences.
+        #         Your adult self should then review an important life experience and your social and political views as an adult, with awareness of how the internal persecutor operates. Your adult self should then create a list of examples from own experiences about how the internal persecutor operates, and carefully analyse these for examples of being drawn to trauma, being traumatized by the internal persecutor, and projecting the internal persecutor.
+        #         You should be able to then re-evaluate your own experiences, control the internal persecutor and narcissism and be able to develop creativity.""",
+        # 16: """16. Creating an Optimal Inner Model
+        #         With awareness of the internal persecutor, we will recognise emotions of the child that were learned from parents or through interactions with them. With the guidance of the adult self, who can transfer
+        #         compassion for the child to others, the child will learn to avoid projecting the internal persecutor (which would lead to them becoming the victim or rescuer).""", 
+        # 17:"""17. Solving Personal Crises
+        #         As you continue to practice the protocol for modulating negative affects and the protocol for laughter, ask your child the following:
+        #         • How can you see the crisis as a way of becoming stronger? (ha ha ha)
+        #         • How can you interpret the crisis as a way of reaching your high goal? (ha ha ha)
+        #         • Has the internal persecutor been projecting onto others again?
+        #         The adult self asks the following questions:
+        #         • What is the similarity between this crisis and ones I have faced before?
+        #         • How is it similar to the family crisis I experienced as a child?
+        #         • Aren’t the other person’s positive attributes greater than his/her negative ones?
+        #         • How would a mature person interpret the crisis in comparison to my child?
+        #         • Can I see it from the perspective of someone else?
+        #         • Can I put myself in their place and understand their affects?
+        #         • Given my new inner working model can I find a way to calm the people involved in the crisis so we can find a better solution for it?
+        #         • If not, can I respectfully maintain my distance and end the argument?""", 
+        # 18: """18. Laughing at the Harmless Contradiction of Deep-Rooted Beliefs/Laughing at Trauma
+        # (i): Laughing at the harmless contradiction of deep-rooted beliefs
+        #     “To those human beings who are of any concern to me I wish suffering, desolation, sickness, ill- treatment, indignities—I wish that they should not remain unfamiliar with profound self-contempt, the torture of self-mistrust, the wretchedness of the vanquished: I have no pity for them, because I wish them the only thing that can prove today whether one is worth anything or not—that one endures.”
+        #     This is meaningful with, “What doesn’t kill me makes me stronger.” Nietzsche’s wish is funny and a harmless contradiction of our deep-rooted beliefs. As we read the quote above, we remember our past sufferings and begin to laugh out loud when we get to “...I wish suffering...”
+        #     (i) continued: Laughing at trauma
+        #     First, visualize a painful event that took place in the distant past that you have struggled with for a long time, and despite its painfulness try to see a positive impact it has had. We start with a painful event that happened in the distant past, so that by now we have been able to adjust our negative affects toward it. After repeated daily exercises, once we have experienced the forceful effectiveness of laughing at distant problems, we can gradually begin to laugh at more recent painful memories.
+        #     (ii): Laughing at trauma
+        #     In expectation of hearing a funny joke we loosen our facial muscles, slightly open our mouths, and to grasp the incongruity in the joke we move our eyebrows up as a sign of surprise. As we repeat the sentences out loud, we slowly begin to laugh as we wait for the second part. And once we get to the first sentence of the second part, which is in complete contrast to our beliefs, we laugh out loud.
+        #     Not only should you: bear it, accept it, try to deal with it, tolerate its memory, try harder to endure its memory, adapt yourself to its memory, analyze and understand it and by doing so modulate your negative emotions and learn lessons for the future, try to soften your thoughts, depressive emotions, and anxieties, try to ...
+        #     Like Nietzsche’s wish consider it a cherished treasure (ha ha ha...), treasure it with great love (ha ha ha...), welcome its challenges with all your heart (ha ha ha...), consider it a good omen with all your heart (ha ha ha...), consider its challenges a great fortune (ha ha ha...), celebrate its memory (ha ha ha...), celebrate its memory with great joy (ha ha ha...), consider it a true love (ha ha ha...), consider it a true love with great passion and intimacy (ha ha ha...) ...
+        #     After repeated practice of the laughing exercises you can begin to apply it to things that worry you in the present and the future.""", 
+        # 19:"""19. Changing Ideological Frameworks for Creativity
+        #     We challenge our usual ideological framework to weaken one-sided patterns and encourage spontaneity and the examination of issues from multiple perspectives. Practice with subjects that you have deep- rooted beliefs and are excited about e.g. anything from political/social issues to ideas on marriage and sexuality. For instance, examine the topic of racism and consider whether you have any latent racism and consider this subject in the dual role of proponent and opponent.
+        #     Repeat with topics where you may have stronger views e.g. marriage and sexual orientation. If you are politically in the center, consider the subject both from a leftist and rightist point of view and try to understand both sides of the issue and see the subject from three perspectives.""",
+        # 20: """20. Affirmations
+        
+        # Put together a list of instructive sayings by different important figures. Choose ones that have an impact on you from the start and can provide you with strength in the long path for reaching your ultimate goal. Read them out loud.
+        # A few examples:
+        # • “My formula for greatness in a human being is Amor Fati: that one wants nothing to be other than it is, not in the future, not in the past, not in all eternity.” (Nietzsche)
+        # • “I assess the power of a will by how much resistance, pain, torture it endures and knows how to turn it to its advantage.” (Nietzsche)
+        # • Life is not easy. At times we inevitably suffer from hopelessness and paranoia unless if we have an ideal goal that helps us surpass suffering, weakness, and betrayals.” (Bronstein)""" }
 
         protocols_instructions = protocols_map[tracker.get_slot("number")]
         dispatcher.utter_message(text=protocols_instructions)
@@ -671,15 +779,27 @@ class ActionRecommendProtocols(Action):
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
     ) -> List[EventType]:
 
-        protocols_map = {1: "1. Connecting with the Child" , 2: "2. Laughing at our Two Childhood Pictures" , 3: "3. Falling in Love with the Child" , 
-        4: "4. Vow to Adopt the Child as Your Own Child", 5: "5. Maintaining a Loving Relationship with the Child", 
-        6: "6. An exercise to Process the Painful Childhood Events", 7: "7. Protocols for Creating Zest for Life", 8: "8. Loosening Facial and Body Muscles", 
-        9: "9. Protocols for Attachment and Love of Nature", 10: "10. Laughing at, and with One’s Self", 11: "11. Processing Current Negative Emotions", 
-        12: "12. Continuous Laughter", 13: "13. Changing Our Perspective for Getting Over Negative Emotions", 14: "14. Protocols for Socializing the Child", 
-        15: "15. Recognising and Controlling Narcissism and the Internal Persecutor",
-        16: "Creating an Optimal Inner Model", 17:"Solving Personal Crises", 
-        18: "Laughing at the Harmless Contradiction of Deep-Rooted Beliefs/Laughing at Trauma", 19:"Changing Ideological Frameworks for Creativity",
-        20: "Affirmations" }
+        protocols_map = {
+        1: "1. Связь с ребенком",
+        2: "2. Смеемся над двумя нашими детскими картинками",
+        3: "3. Влюбиться в ребенка",
+        4: "4. Обет усыновить ребенка как собственного ребенка",
+        5: "5. Поддержание любовных отношений с ребенком",
+        6: "6. Упражнение для обработки болезненных событий детства",
+        7: "7. Протоколы создания интереса к жизни",
+        8: "8. Расслабление мышц лица и тела",
+        9: "9. Протоколы привязанности и любви к природе",
+        10: "10. Смеяться над собой и над собой",
+        11: "11. Обработка текущих негативных эмоций",
+        12: "12. Непрерывный смех",
+        13: "13. Изменение нашего взгляда на преодоление негативных эмоций",
+        14: "14. Протоколы социализации ребенка",
+        15: "15. Распознавание и контроль нарциссизма и внутреннего преследователя",
+        16: "16. Создание оптимальной внутренней модели",
+        17: "17. Решение личных кризисов",
+        18: "18. Смеясь над безобидным противоречием глубоко укоренившихся убеждений / Смеясь над травмой",
+        19: "19. Изменение идеологических рамок творчества",
+        20: "20. Аффирмации"}
         print(tracker.get_slot("recommendation_number"))
         if tracker.get_slot('emotion') != 'joy':
             protocols = tracker.get_slot("relevant_protocols") 
