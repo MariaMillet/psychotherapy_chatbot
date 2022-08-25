@@ -35,7 +35,14 @@ from transformers import (
 )
 from sentence_transformers import SentenceTransformer, util
 
+import datasets
+from datasets import load_dataset
+from datasets import DatasetDict
+from datasets import Dataset
+
+import pandas as pd
 from numpy import random
+from numpy.random.mtrand import randint
 
 import nltk
 from nltk.util import ngrams
@@ -77,23 +84,90 @@ def generate_response_dataset(k=5, querry="Чувствую себя очень 
     top_10_similar = sorted_dataset['train'].select([0,1,2,3,4,5,6,7,8,9,10])
     return top_10_similar
 
+# def generate_synthetic_dataset(k=10, emotion='anger'):
+#     dataSet = load_from_disk('./data/respSyntheticDataset')
+#     subsetDataSet = dataSet.filter(lambda row: row['emotion']==emotion)
+#     if emotion == "joy":
+#         max_row = len(subsetDataSet["Would you like to attempt protocols for joy?"])
+#     else:
+#         max_row = len(subsetDataSet["Did you find protocol 6 distressing?"])
+#     random_selection = subsetDataSet.select(random.choice(max_row, 10, replace=False))
+#     print(random_selection)
+#     return random_selection
+
 def generate_synthetic_dataset(k=10, emotion='anger'):
     dataSet = load_from_disk('./data/respSyntheticDataset')
     subsetDataSet = dataSet.filter(lambda row: row['emotion']==emotion)
-    if emotion == "joy":
-        max_row = len(subsetDataSet["Would you like to attempt protocols for joy?"])
-    else:
-        max_row = len(subsetDataSet["Did you find protocol 6 distressing?"])
-    random_selection = subsetDataSet.select(random.choice(max_row, 10, replace=False))
-    print(random_selection)
-    return random_selection
 
+    if emotion == "joy":
+        subsetDataSet = subsetDataSet.remove_columns(['emotion','Have you strongly felt or expressed any of the following emotions towards someone?', 'Do you believe you should be the savior of someone else?', 'Do you feel that you are trying to control someone?', 'Do you see yourself as the victim, blaming someone else for how negative you feel?', 'Are you always blaming and accusing yourself for when something goes wrong?', 'Is it possible that in previous conversations you may not have always considerdother viewpoints presented?', 'Are you undergoing a personal crisis (experience difficulties with loved ones e.g. falling out with friends)?', 'Was this emotion triggered by a specific event?', 'Was the event recent?', 'Did you find protocol 6 distressing?', 'Did you find protocol 11 distressing?', 'Is it ok to ask additional questions?'] )
+        internal_dict = dict()
+        max_int = len(subsetDataSet)
+        # columns = subsetDataSet.column_names
+        columns = [column for column in subsetDataSet.column_names if column[0:3]!="ppl" and column[0:3]!="emp"]
+        print(columns)
+        for column_name in columns:
+            number_range = list(range(max_int))
+            internal_dict[column_name] = []
+            fluency_column = "ppl_"+column_name
+            empathy_column = "emp_"+column_name
+            internal_dict[fluency_column] = []
+            internal_dict[empathy_column] = []
+            i = 0
+            while i < 10:
+                random_number = random.choice(number_range)
+                number_range.remove(random_number)
+                utterance = subsetDataSet[column_name][random_number]
+                emp_score = subsetDataSet[empathy_column][random_number]
+                fluency_score = subsetDataSet[fluency_column][random_number]
+                if not pd.isna(utterance):
+                    i += 1
+                    internal_dict[column_name].append(utterance)
+                    internal_dict[fluency_column].append(fluency_score)
+                    internal_dict[empathy_column].append(emp_score)
+    else:
+        subsetDataSet = subsetDataSet.remove_columns(['Would you like to attempt protocols for joy?', 'emotion'] )
+        internal_dict = dict()
+        max_int = len(subsetDataSet)
+        
+        # columns = subsetDataSet.column_names
+        columns = [column for column in subsetDataSet.column_names if column[0:3]!="ppl" and column[0:3]!="emp"]
+        print(columns)
+        for column_name in columns:
+            number_range = list(range(max_int))
+            internal_dict[column_name] = []
+            fluency_column = "ppl_"+column_name
+            empathy_column = "emp_"+column_name
+            internal_dict[fluency_column] = []
+            internal_dict[empathy_column] = []
+            i = 0
+            while i < 10:
+                random_number = random.choice(number_range)
+                number_range.remove(random_number)
+                utterance = subsetDataSet[column_name][random_number]
+                emp_score = subsetDataSet[empathy_column][random_number]
+                fluency_score = subsetDataSet[fluency_column][random_number]
+                if not pd.isna(utterance):
+                    i += 1
+                    internal_dict[column_name].append(utterance)
+                    internal_dict[fluency_column].append(fluency_score)
+                    internal_dict[empathy_column].append(emp_score)
+
+
+    # synthetic_df_columns = subsetDataSet.column_names
+    synthetic_df_columns = internal_dict.keys()
+    print(synthetic_df_columns)
+    synthetic_df = pd.DataFrame(columns=synthetic_df_columns)
+    df = pd.DataFrame.from_dict(internal_dict)
+    synthetic_df = pd.concat([synthetic_df, df])
+    dataset = Dataset.from_pandas(synthetic_df)
+    return dataset
 
 
 def generate_next_response(prompt, past_sentences, type, novelty_weight=0.5, fluency_weight=0.25, empathy_weight=0.25, empathy_mode="medium"):
   if type=="synthetic":
     dataset = load_from_disk('./data/randomSyntheticDataset')
-    print(dataset[0]["Would you like to attempt protocols for joy?"])
+    # print(dataset[0]["Would you like to attempt protocols for joy?"])
   else:
     dataset = load_from_disk('./data/topKdataset')
   scores = dataset.map(lambda row: score(row, prompt, past_sentences, novelty_weight, fluency_weight, empathy_weight, empathy_mode=empathy_mode), load_from_cache_file=False)
@@ -149,11 +223,11 @@ class AskForSlotActionFeeling(Action):
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
     ) -> List[EventType]:
         if len(tracker.get_slot("name").split())!=1:
-            dispatcher.utter_message(text="sorry i am only trained to understand a single word names")
+            dispatcher.utter_message(text="Извините, я пока не могу понять имя, длиннее одного слова")
             name = "милый друг"
         else:
-            name = tracker.get_slot("name")
-        dispatcher.utter_message(text=f"Очень приятно, {name}! Я практикую методику SAT, и сделаю всё, чтобы улучшить ваше душевное состояние. Для начала, опишите ,пожалуйста, как вы себя ощущаете? \u270F\uFE0F ")
+            name = tracker.get_slot("name").capitalize()
+        dispatcher.utter_message(text=f"Очень приятно, {name}! Я практикую методику SAT, и сделаю всё, чтобы улучшить ваше душевное состояние. Для начала, опишите, пожалуйста, как вы себя ощущаете? \u270F\uFE0F ")
         # dispatcher.utter_message(text=f"Please select who you want to speak with \u270F\uFE0F", buttons=buttons)
         # buttons = [{"title": "yes", "payload": '/joy_enquire_for_protocol{"emotion":"joy"}'}, {"title": "Нет, вы не угадали мое настроение", "payload":'/not_correct_prediction'}]
         # prompts = ['Have you strongly felt or expressed any of the following emotions towards someone?', 'Do you believe you should be the savior of someone else?', 'Do you see yourself as the victim, blaming someone else for how negative you feel?',
@@ -226,6 +300,7 @@ class AskIfEventTriggeredEmotion(Action):
         # Create a subset of EPRU dataset as measured by the similarity of user utterance to emotion utterances in the dataset for an emotion specified
         if tracker.get_slot('personality') == "Компьюша":
             synthetic_dataset = generate_synthetic_dataset(k=10,emotion=tracker.get_slot('emotion'))
+            print(synthetic_dataset)
             synthetic_dataset.save_to_disk('./data/randomSyntheticDataset')
         else:
             dataset = generate_response_dataset(k=5, querry=tracker.get_slot('current_feeling'), emotion=tracker.get_slot('emotion'))
@@ -251,11 +326,11 @@ class AskIfEventWasRecent(Action):
         # dataset = generate_response_dataset(k=5, querry=tracker.get_slot('current_feeling'), emotion=tracker.get_slot('emotion'))
         # dataset.save_to_disk('./data/topKdataset')
 
-        buttons = [{"title": "Да, эта ситуация произошла недавно", "payload": '/is_protocol_11_distressing'}, {"title": "Нет, это случилочь достаточно давно", "payload":'/is_protocol_6_distressing'}]
+        buttons = [{"title": "Эта ситуация произошла недавно", "payload": '/is_protocol_11_distressing'}, {"title": "Это случилочь достаточно давно", "payload":'/is_protocol_6_distressing'}]
         empathy_mode = tracker.get_slot("empathy_mode")
         text = generate_next_response(prompt="Was the event recent?", past_sentences=tracker.get_slot('pastResponses'), type=tracker.get_slot("response_type"), novelty_weight=0.5, fluency_weight=0.25, empathy_weight=-0.1, empathy_mode=empathy_mode)
         if len(text.split(".")) == 1:
-         text = tracker.get_slot("name") + " ," + text.lower()
+         text = tracker.get_slot("name").capitalize() + ", " + text.lower()
         updated_responses = add_response_to_past_responses(latest_response=text, past_responses=tracker.get_slot('pastResponses'))
         dispatcher.utter_message(text=text, buttons=buttons)
         return [SlotSet('pastResponses',updated_responses)]
@@ -302,7 +377,7 @@ class AskMoreQuestions(Action):
         empathy_mode = tracker.get_slot("empathy_mode")
     
         text = generate_next_response(prompt="Is it ok to ask additional questions?", past_sentences=tracker.get_slot('pastResponses'), type=tracker.get_slot("response_type"), empathy_mode=empathy_mode)
-        text = tracker.get_slot("name") + ", " + text.lower()
+        text = tracker.get_slot("name").capitalize() + ", " + text.lower()
         updated_responses = add_response_to_past_responses(latest_response=text, past_responses=tracker.get_slot('pastResponses'))
         buttons = [{"title": "Я не против 🙌", "payload": '/additional_questions'}, {"title": "Нет, на сегодня достаточно вопросов 🫢", "payload":'/recommend_protocols{"positive_to_any_base_questions": "False"}'}]
         dispatcher.utter_message(text=text, buttons=buttons, button_type="vertical")
@@ -318,19 +393,37 @@ class AdditionalQuestions(Action):
     ) -> List[EventType]:
 
         available_prompts = tracker.get_slot("additionalQuestionsPrompts")
-        print(available_prompts)
         prompt = random.choice(available_prompts)
         empathy_mode = tracker.get_slot("empathy_mode")
-        text = generate_next_response(prompt=prompt, past_sentences=tracker.get_slot('pastResponses'), type=tracker.get_slot("response_type"), empathy_mode=empathy_mode)
+
+        # new
+        additional_question_number = tracker.get_slot("additional_question_number")
+        if tracker.get_slot('response_type') !=  "human":
+            if additional_question_number % 3 != 0:
+                text = generate_next_response(prompt=prompt, past_sentences=tracker.get_slot('pastResponses'), type=tracker.get_slot("response_type"), empathy_mode="low")
+                if len(text.split('.',1)) > 1:
+                    text = text.split('.',1)[1]
+            else:
+                text = generate_next_response(prompt=prompt, past_sentences=tracker.get_slot('pastResponses'), type=tracker.get_slot("response_type"), empathy_mode=empathy_mode)
+
+        else:
+            if additional_question_number % 2 != 0:
+                text = generate_next_response(prompt=prompt, past_sentences=tracker.get_slot('pastResponses'), type=tracker.get_slot("response_type"), empathy_mode="low")
+                if len(text.split('.',1)) > 1:
+                    text = text.split('.',1)[1]
+            else:
+                text = generate_next_response(prompt=prompt, past_sentences=tracker.get_slot('pastResponses'), type=tracker.get_slot("response_type"), empathy_mode=empathy_mode)
+        if text[-1] != "?":
+            text = text + "?"
         updated_responses = add_response_to_past_responses(latest_response=text, past_responses=tracker.get_slot('pastResponses'))
         if len(available_prompts) == 1:
             buttons = [{"title": "Больше да, чем нет", "payload":'/recommend_protocols{"positive_to_any_base_questions": "True"}'}, {"title": "Думаю нет", "payload":'/recommend_protocols{"positive_to_any_base_questions": "False"}'}]
         else:
             buttons = [{"title": "Больше да, чем нет", "payload":'/recommend_protocols{"positive_to_any_base_questions": "True"}'}, {"title": "Нет", "payload":'/additional_questions'}]   
             available_prompts.remove(prompt)
-        dispatcher.utter_message(text=text, buttons=buttons, button_type="vertical")
+        dispatcher.utter_message(text=text.capitalize(), buttons=buttons, button_type="vertical")
 
-        return [SlotSet("additionalQuestionsPrompts", available_prompts), SlotSet('pastResponses',updated_responses), SlotSet('lastPrompt', prompt)] 
+        return [SlotSet("additionalQuestionsPrompts", available_prompts), SlotSet('pastResponses',updated_responses), SlotSet('lastPrompt', prompt), SlotSet('additional_question_number', additional_question_number+1)] 
 
 
 class ActionRecommendProtocols(Action):
@@ -398,7 +491,7 @@ class ActionRecommendProtocols(Action):
             button["payload"] = f'/invite_to_protocol{d}'
             buttons.append(button)
         print(buttons)
-        name = tracker.get_slot("name")
+        name = tracker.get_slot("name").capitalize()
         dispatcher.utter_message(text = f"Спасибо, что уделили мне ваше ценное время, {name}! Исходя из нашей беседы, я подготовил несколько методик на ваше усмотрение.", buttons=buttons)
         return [SlotSet('relevant_protocols', protocols)]
 
@@ -416,43 +509,89 @@ class ActionInviteToProtocols(Action):
         4: "4. Vow to Adopt the Child as Your Own Child", 
         5: "5. Maintaining a Loving Relationship with the Child", 
         6: """6. An exercise to Process the Painful Childhood Events
-            
-            Through imagination or by drawing, you now consider your emotional world, which is the
-            emotional state of the Child, as a home with some derelict parts that you will fully
-            renovate.
+            With closed eyes, recall a painful scene from childhood e.g. emotional or physical abuse in as much detail as possible, 
+            and associate the face of the child you were with your unhappy photo. After recalling this event and the related emotions, imagine your adult self approaching and embracing the child like
+            a parent embracing a child in distress.
+            While your eyes are still closed, continue to imagine supporting and cuddling the child, loudly supporting them (Examples: “Why are you hitting my child?” and “My darling, I will not let them hurt you any more.”). 
+            Massage your face while doing so, which we interpret as cuddling the child..""",
 
-            Some of the rooms of the new home are intended to provide a safe haven at times of
-            distress for your Child; others establish a safe base for your Child from which to
-            understand and tackle life’s challenges.
-
-            The new home and its garden is bright and sunny; you imagine carrying out these self-
-            attachment exercises in this environment.
-
-            The unrestored basement of the new house is the remnant of the derelict house and
-            contains your negative emotions including fear, anger and despair. When you suffer from
-            these negative emotions, you imagine that your Child is trapped in this basement and
-            he/she can gradually learn to open the door of the basement, walk out and enter the bright
-            rooms, reuniting with your Adult.""",
-
-        7: "7. Protocols for Creating Zest for Life", 
-        8: "8. Loosening Facial and Body Muscles", 
-        9: "9. Protocols for Attachment and Love of Nature", 
-        10: "10. Laughing at, and with One’s Self", 
-        11: "11. Processing Current Negative Emotions", 
-        12: "12. Continuous Laughter", 
-        13: "13. Changing Our Perspective for Getting Over Negative Emotions", 
-        14: "14. Protocols for Socializing the Child", 
-        15: "15. Recognising and Controlling Narcissism and the Internal Persecutor",
-        16: "16. Creating an Optimal Inner Model", 
-        17:"17. Solving Personal Crises", 
-        18: "18. Laughing at the Harmless Contradiction of Deep-Rooted Beliefs/Laughing at Trauma", 
-        19:"19. Changing Ideological Frameworks for Creativity",
-        20: "20. Affirmations" }
+        7: """                      7. Protocols for Creating Zest for Life
+        Using a mirror, imagine the reflection is your childhood self and loudly recite to it your selected happy love songs, using your entire body. 
+        Repeat songs and poems in many different circumstances e.g. while walking on the street or doing housework, to be able to integrate them into your life.""", 
+        8: """                      8. Loosening Facial and Body Muscles
+           You should loosen your muscles at least twice a day as you sing with your face and entire body, as if playing, dancing, laughing and having fun with the child as parents do with children.""", 
+        9: """                      9. Protocols for Attachment and Love of Nature
+            To create an attachment with nature, you should visit a park or forest and spend time admiring nature, e.g. admiring a beautiful tree, as if seeing its branches and leaves for the first time. 
+            Repeat continuously and with different trees until you feel you have formed an attachment with nature. 
+            This will help to modulate your emotions and you will want to spend more time with nature each day.""", 
+        10: """                     Method 10. Laughing at, and with One’s Self
+            Begin laughing with yourself about a small accomplishment e.g. in sports, housework, or any other task, however small or unimportant. 
+            With every small accomplishment, you should smile as if victorious, and gradually change this smile to laughter, and make this laughter last longer and longer. 
+            By practising this you will be able to smile and laugh without ridicule about anything you have said or done in the past while maintaining compassion for your childhood self.""", 
+        11: """                     11. Processing Current Negative Emotions
+            With closed eyes, imagine the unhappy photo and project the unhappy emotions, e.g. anger, sorrow, towards the photo that represents the child. 
+            As with Type 6, we make contact with our adult self to attend to and care for the child to support the child and modulate the child’s negative emotions.
+            While projecting these negative emotions, loudly reassure the child and massage your own face, which we interpret as cuddling the child. 
+            Continue this until you have contained the negative emotions, at which point you can switch to focusing on the happy photo.""", 
+        12: """12. Continuous Laughter
+            At a time when you are alone, you should open your mouth slightly, loosen your face muscles, form a Duchenne smile and slowly repeat one of the following phrases as if laughing: eh, eh, eh, eh; ah, ah, ah, ah; oh, oh, oh, oh; uh, uh, uh, uh; or ye, ye, ye, ye.
+            If a subject is needed for laughter, you can think about the silliness of the exercise. This exercise is a good antidote for stress.""", 
+        13: """13. Changing Our Perspective for Getting Over Negative Emotions
+            To break free of the gravitational field of powerful negative patterns that emerge when we are stuck in the storeroom of negative emotions, or the “psychological abyss”, stare at the black vase in the Gestalt vase picture (below). When you see the white faces, laugh out loud.
+            Having created a positive powerful pattern of love with the child through previous exercises, you can now depart from the field of negative patterns by singing your happy love song to enter the gravitational field of love for the child instead.
+            This is like changing our interpretation of the above image and instead of seeing a black vase of negative emotions discovering two white faces, you see the child and the adult self who are now looking at each other.""", 
+        14: """14. Protocols for Socializing the Child
+                By repeating protocols 1-13 you can reduce negative emotions and increase positive affects. 
+                You should gradually be able to perform these exercises with eyes open and can integrate them into your daily life. You should be able to extend compassion for the child to other people. The adult self should become aware of any narcissistic tendencies or anti-social feelings of the child e.g. envy, jealousy, greed, hatred, mistrust, malevolence, controlling behavior and revengefulness.
+                The adult self can behave like a parent to contain these emotions and discourage anti-social feelings and attitudes of the child by expressing affection to the child and simulating cuddles by massaging your face.
+                The adult self should try to direct the child’s anger and negative energy towards playing, creativity and development. As the child’s positive affects increase and his/her negative affects decrease, by expressing positive emotions he/she can attract more positive reactions from others, and in turn gain a more positive outlook toward others.""", 
+        15: """15. Recognising and Controlling Narcissism and the Internal Persecutor
+                The adult self becomes aware of the facets of the trauma triangle: internal persecutor, victim, and rescuer. The adult self examines the effects of the triangle (narcissism, lack of creativity) in daily life and previous experiences.
+                Your adult self should then review an important life experience and your social and political views as an adult, with awareness of how the internal persecutor operates. Your adult self should then create a list of examples from own experiences about how the internal persecutor operates, and carefully analyse these for examples of being drawn to trauma, being traumatized by the internal persecutor, and projecting the internal persecutor.
+                You should be able to then re-evaluate your own experiences, control the internal persecutor and narcissism and be able to develop creativity.""",
+        16: """16. Creating an Optimal Inner Model
+                With awareness of the internal persecutor, we will recognise emotions of the child that were learned from parents or through interactions with them. With the guidance of the adult self, who can transfer
+                compassion for the child to others, the child will learn to avoid projecting the internal persecutor (which would lead to them becoming the victim or rescuer).""", 
+        17:"""17. Solving Personal Crises
+                As you continue to practice the protocol for modulating negative affects and the protocol for laughter, ask your child the following:
+                • How can you see the crisis as a way of becoming stronger? (ha ha ha)
+                • How can you interpret the crisis as a way of reaching your high goal? (ha ha ha)
+                • Has the internal persecutor been projecting onto others again?
+                The adult self asks the following questions:
+                • What is the similarity between this crisis and ones I have faced before?
+                • How is it similar to the family crisis I experienced as a child?
+                • Aren’t the other person’s positive attributes greater than his/her negative ones?
+                • How would a mature person interpret the crisis in comparison to my child?
+                • Can I see it from the perspective of someone else?
+                • Can I put myself in their place and understand their affects?
+                • Given my new inner working model can I find a way to calm the people involved in the crisis so we can find a better solution for it?
+                • If not, can I respectfully maintain my distance and end the argument?""", 
+        18: """18. Laughing at the Harmless Contradiction of Deep-Rooted Beliefs/Laughing at Trauma
+        (i): Laughing at the harmless contradiction of deep-rooted beliefs
+            “To those human beings who are of any concern to me I wish suffering, desolation, sickness, ill- treatment, indignities—I wish that they should not remain unfamiliar with profound self-contempt, the torture of self-mistrust, the wretchedness of the vanquished: I have no pity for them, because I wish them the only thing that can prove today whether one is worth anything or not—that one endures.”
+            This is meaningful with, “What doesn’t kill me makes me stronger.” Nietzsche’s wish is funny and a harmless contradiction of our deep-rooted beliefs. As we read the quote above, we remember our past sufferings and begin to laugh out loud when we get to “...I wish suffering...”
+            (i) continued: Laughing at trauma
+            First, visualize a painful event that took place in the distant past that you have struggled with for a long time, and despite its painfulness try to see a positive impact it has had. We start with a painful event that happened in the distant past, so that by now we have been able to adjust our negative affects toward it. After repeated daily exercises, once we have experienced the forceful effectiveness of laughing at distant problems, we can gradually begin to laugh at more recent painful memories.
+            (ii): Laughing at trauma
+            In expectation of hearing a funny joke we loosen our facial muscles, slightly open our mouths, and to grasp the incongruity in the joke we move our eyebrows up as a sign of surprise. As we repeat the sentences out loud, we slowly begin to laugh as we wait for the second part. And once we get to the first sentence of the second part, which is in complete contrast to our beliefs, we laugh out loud.
+            Not only should you: bear it, accept it, try to deal with it, tolerate its memory, try harder to endure its memory, adapt yourself to its memory, analyze and understand it and by doing so modulate your negative emotions and learn lessons for the future, try to soften your thoughts, depressive emotions, and anxieties, try to ...
+            Like Nietzsche’s wish consider it a cherished treasure (ha ha ha...), treasure it with great love (ha ha ha...), welcome its challenges with all your heart (ha ha ha...), consider it a good omen with all your heart (ha ha ha...), consider its challenges a great fortune (ha ha ha...), celebrate its memory (ha ha ha...), celebrate its memory with great joy (ha ha ha...), consider it a true love (ha ha ha...), consider it a true love with great passion and intimacy (ha ha ha...) ...
+            After repeated practice of the laughing exercises you can begin to apply it to things that worry you in the present and the future.""", 
+        19:"""19. Changing Ideological Frameworks for Creativity
+            We challenge our usual ideological framework to weaken one-sided patterns and encourage spontaneity and the examination of issues from multiple perspectives. Practice with subjects that you have deep- rooted beliefs and are excited about e.g. anything from political/social issues to ideas on marriage and sexuality. For instance, examine the topic of racism and consider whether you have any latent racism and consider this subject in the dual role of proponent and opponent.
+            Repeat with topics where you may have stronger views e.g. marriage and sexual orientation. If you are politically in the center, consider the subject both from a leftist and rightist point of view and try to understand both sides of the issue and see the subject from three perspectives.""",
+        20: """20. Affirmations
+        
+        Put together a list of instructive sayings by different important figures. Choose ones that have an impact on you from the start and can provide you with strength in the long path for reaching your ultimate goal. Read them out loud.
+        A few examples:
+        • “My formula for greatness in a human being is Amor Fati: that one wants nothing to be other than it is, not in the future, not in the past, not in all eternity.” (Nietzsche)
+        • “I assess the power of a will by how much resistance, pain, torture it endures and knows how to turn it to its advantage.” (Nietzsche)
+        • Life is not easy. At times we inevitably suffer from hopelessness and paranoia unless if we have an ideal goal that helps us surpass suffering, weakness, and betrayals.” (Bronstein)""" }
 
         protocols_instructions = protocols_map[tracker.get_slot("number")]
         dispatcher.utter_message(text=protocols_instructions)
-        data = {"payload":"pdf_attachment", "title": "PDF Title", "url": "https://drive.google.com/file/d/1TfdZQQ8bI4WIPPWLyDFond71RER9hFFJ/view?usp=sharing"}
-        dispatcher.utter_message(json_message=data)
+        # data = {"payload":"pdf_attachment", "title": "PDF Title", "url": "https://drive.google.com/file/d/1TfdZQQ8bI4WIPPWLyDFond71RER9hFFJ/view?usp=sharing"}
+        # dispatcher.utter_message(json_message=data)
        
         
 
@@ -505,22 +644,24 @@ class ActionRespondToFeedback(Action):
         if response_type == "encouraging_worse":
             text = "Я сожалею, что программа пока не повлияла на вас позитивно 🥲. Если пожелаете, я могу порекоммендовать другую программу."
         
-        buttons = [{"title": "❌", "payload": '/goodbye'}]
+        buttons = [{"title": "❌", "payload": '/end'}]
 
         yes_button = dict()
         yes_button["title"] = "✅"
-        
         relevant_protocols = tracker.get_slot("relevant_protocols")
         if len(relevant_protocols) >= 1:
             yes_button["payload"] = '/protocol_recommendation_follow_up'
+            recommendation_number = tracker.get_slot("recommendation_number") + 1
+            print(f"number recom {recommendation_number}")
         else:
             yes_button["payload"] = '/greet'
+            recommendation_number = 0
 
         buttons.append(yes_button) 
 
         # buttons = [{"title": "Yes", "payload": '/generate_response{"response_type":"positive"}'}, {"title": "No", "payload": '/generate_response{"response_type":"encouraging"}'}, {"title": "Worse", "payload": '/generate_response{"response_type":"encouraging"}'} ]
         dispatcher.utter_message(text=text, buttons=buttons)
-        return []
+        return [SlotSet("recommendation_number", recommendation_number)]
     
 class ActionRecommendProtocols(Action):
     def name(self) -> Text:
@@ -530,11 +671,16 @@ class ActionRecommendProtocols(Action):
         self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
     ) -> List[EventType]:
 
-        protocols_map = {1: "Connecting with the Child" , 2: "Laughing at our Two Childhood Pictures" , 3: "Falling in Love with the Child" , 4: "Vow to Adopt the Child as Your Own Child", 5: "Maintaining a Loving Relationship with the Child", 6: "An exercise to Process the Painful Childhood Events", 7: "Protocols for Creating Zest for Life", 8: "Loosening Facial and Body Muscles", 9: "Protocols for Attachment and Love of Nature", 10: "Laughing at, and with One’s Self", 11: "Processing Current Negative Emotions", 12: "Continuous Laughter", 13: "Changing Our Perspective for Getting Over Negative Emotions", 14: "Protocols for Socializing the Child", 15: "Recognising and Controlling Narcissism and the Internal Persecutor",
+        protocols_map = {1: "1. Connecting with the Child" , 2: "2. Laughing at our Two Childhood Pictures" , 3: "3. Falling in Love with the Child" , 
+        4: "4. Vow to Adopt the Child as Your Own Child", 5: "5. Maintaining a Loving Relationship with the Child", 
+        6: "6. An exercise to Process the Painful Childhood Events", 7: "7. Protocols for Creating Zest for Life", 8: "8. Loosening Facial and Body Muscles", 
+        9: "9. Protocols for Attachment and Love of Nature", 10: "10. Laughing at, and with One’s Self", 11: "11. Processing Current Negative Emotions", 
+        12: "12. Continuous Laughter", 13: "13. Changing Our Perspective for Getting Over Negative Emotions", 14: "14. Protocols for Socializing the Child", 
+        15: "15. Recognising and Controlling Narcissism and the Internal Persecutor",
         16: "Creating an Optimal Inner Model", 17:"Solving Personal Crises", 
         18: "Laughing at the Harmless Contradiction of Deep-Rooted Beliefs/Laughing at Trauma", 19:"Changing Ideological Frameworks for Creativity",
         20: "Affirmations" }
-
+        print(tracker.get_slot("recommendation_number"))
         if tracker.get_slot('emotion') != 'joy':
             protocols = tracker.get_slot("relevant_protocols") 
             buttons = []
@@ -547,6 +693,7 @@ class ActionRecommendProtocols(Action):
                 button["payload"] = f'/invite_to_protocol{d}'
                 buttons.append(button)
             print(buttons)
+            possible_responses = ["Представляю на выбор несколько методик"]
             dispatcher.utter_message(text = f"Представляю на выбор несколько методик", buttons=buttons)
         else:
             protocols = tracker.get_slot("relevant_protocols") 
@@ -561,8 +708,9 @@ class ActionRecommendProtocols(Action):
                 button["payload"] = f'/invite_to_protocol{d}'
                 buttons.append(button)
             print(buttons)
+            possible_responses = ["Представляю на выбор несколько методик"]
             dispatcher.utter_message(text = f"Представляю на выбор несколько методик", buttons=buttons)
-
+            print(tracker.get_slot("recommendation_number"))
         return []
 
 class ActionRecommendProtocolsForPositiveFeelings(Action):
@@ -593,7 +741,7 @@ class ActionRecommendProtocolsForPositiveFeelings(Action):
         no_button = dict()
         no_button['title'] = "Не сегодня ❌"
         yes_button["payload"] = '/protocol_recommendation_follow_up'
-        no_button["payload"] = '/goodbye'
+        no_button["payload"] = '/end'
 
         buttons.extend([yes_button, no_button]) 
         dispatcher.utter_message(text=text, buttons=buttons)
@@ -601,5 +749,25 @@ class ActionRecommendProtocolsForPositiveFeelings(Action):
 
 
         return [SlotSet('relevant_protocols', [9, 10, 11])]
+
+class ActionEndConversation(Action):
+    def name(self) -> Text:
+        return "action_end"
+
+    def run(
+        self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict
+    ) -> List[EventType]:
+
+        name = tracker.get_slot("name").capitalize()
+        text = [f"{name}, спасибо за беседу, желаю вам всего наилучшего 💚!", f"{name}, спасибо за доверие и, надеюсь, до встречи 💙!"]
+        rand_number = random.choice(len(text))
+        text = text[rand_number]
+        dispatcher.utter_message(text=text)
+
+        text = f"Чтобы перезапустить чат напишите сначала '/restart', затем 'hi'"
+
+        dispatcher.utter_message(text=text)
+
+        return []
 
 

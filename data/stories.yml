@@ -11,7 +11,14 @@ stories:
       - intent: goodbye
       - action: utter_goodbye
 
+
+
+
 rules:
+- rule: end conversation
+  steps:
+  - intent: end
+  - action: action_end
 - rule: from emotion to checking if event caused it
   steps:
   - intent: is_event

@@ -21,6 +21,7 @@ intents:
   - protocol_recommendation_follow_up
   - joy_enquire_for_protocol
   - is_event
+  - end
 entities:
   - emotion
   - protocols_1
@@ -33,12 +34,24 @@ entities:
   - empathy_mode
 
 slots:
-
+  additional_question_number:
+    type: float
+    influence_conversation: false
+    initial_value: 0
+    mappings:
+    - type: custom
+  recommendation_number:
+    type: float
+    influence_conversation: false
+    initial_value: 0
+    mappings:
+    - type: custom
   name:
     type: text
     influence_conversation: true
     mappings:
     - type: from_text
+
       conditions:
       - active_loop: emotion_form
         requested_slot: name
@@ -166,7 +179,7 @@ responses:
   # utter_greet:
   #   - text: Hello, I’m Silly, I can check the time, date and day of the week for you. You can ask me "what time is it now?", "what day is today?" or "what day is tomorrow?"
   utter_goodbye:
-    - text: Goodbye!
+    - text: что-то пошло не так 😮‍💨, чтобы перезапустить чат напишите сначала "/restart", затем "hi"
 actions:
   - utter_goodbye
   - action_ask_name
@@ -187,6 +200,7 @@ actions:
   - action_protocol_recommendation_follow_up
   - action_joy_enquire_for_protocol
   - action_is_event
+  - action_end
 forms:
   emotion_form:
     required_slots:
