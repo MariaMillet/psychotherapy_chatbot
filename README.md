@@ -12,6 +12,7 @@
   pip install sentence-transformers == 2.2.2
 
 2. Activate a virtual environment
+3. Optional - run importdata.py file
 3. Run "Rasa train" command
 4. Run "Rasa run actions" command
 5. Split a terminal and activate a virtual environment in the second terminal
